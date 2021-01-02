@@ -1,0 +1,276 @@
+<main class='main-content bgc-grey-100'>
+  <div id='mainContent'>
+    <div class="row masonry pos-r">
+
+      <div class="masonry-sizer col-md-12"></div>
+
+      <div class="masonry-item col-md-12">
+        <div class="bgc-white p-20 bd mb-4" *ngIf="this.printingOption < 4">
+          <h6 class="c-grey-900">Statistiques</h6>
+          <hr>
+          <div class="mT-30">
+            <form>
+              <div class="form-group" *ngIf="this.bdclosing===false">
+                <div class="d-flex">
+                  <label for="fileInput">Importer un fichier</label>
+                  <input #fileSelector type="file" class="form-control-file" id="fileInput"
+                    (change)="this.incomingfile($event)"
+                    accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.csv"
+                    multiple>
+                  <span style="text-align: right;">
+                    <button type="button" class="close" (click)="this.resetFiles()">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </span>
+                </div>
+              </div>
+              <div *ngIf="this.printingOption===3">
+                <div class="progress">
+                  <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" [ngStyle]="{
+                      'width': ((this.progress * 100 / this.total) | number:'1.0-0').toString() + '%'
+                    }">
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex justify-content-around">
+                <button class="btn btn-success" *ngIf="this.progressive === true && 
+                  (this.printingOption === 1 || this.printingOption === 3)" (click)="this.validate()"
+                  [disabled]="fileSelector && fileSelector.nativeElement.value && fileSelector.nativeElement.value.length === 0">
+                  {{this.printingOption !== 3 ? 
+                    'Générer un fichier avec calcul de commissions':
+                    'Prévisualiser les données à charger'
+                  }}
+                </button>
+                <button class="btn btn-primary" *ngIf="this.progressive === true && this.printingOption === 2"
+                  data-toggle="modal" data-target="#updateModal"
+                  [disabled]="fileSelector && fileSelector.nativeElement.value && fileSelector.nativeElement.value.length === 0">
+                  Générer un rapport de excel rapprochement
+                </button>
+                <button class="btn btn-danger" *ngIf="this.progressive === true 
+                  && this.printingOption === 3" (click)="this.chargerBD()"
+                  [disabled]="fileSelector && fileSelector.nativeElement.value && fileSelector.nativeElement.value.length === 0">
+                  Lancer la sauvegarde en base de données
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="bgc-white p-20 bd mb-4" *ngIf="this.printingOption >= 4">
+          <h6 class="c-grey-900">Données Périodiques</h6>
+          <hr>
+          <div class="mT-30">
+            <form>
+              <div class="d-flex justify-content-around">
+                <button class="btn btn-primary" *ngIf="this.printingOption === 4" data-toggle="modal"
+                  data-target="#updateModal">
+                  Générer les statistiques périodiques
+                </button>
+                <button class="btn btn-info" *ngIf="this.printingOption === 5"
+                  data-toggle="modal" data-target="#updateModal"
+                  [disabled]="fileSelector && fileSelector.nativeElement.value && fileSelector.nativeElement.value.length === 0">
+                  Extraire les données du Task Manager
+                </button>
+                <button class="btn btn-primary" *ngIf="this.printingOption === 6"
+                  data-toggle="modal" data-target="#updateModal">
+                  Générer le rapport global de rapprochement
+                </button>
+                <button class="btn btn-warning" *ngIf="this.printingOption === 7"
+                  data-toggle="modal" data-target="#updateModal">
+                  Générer le rapport des manquants
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="bgc-white p-20 bd my-4">
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [(ngModel)]="this.printingOption" (change)="this.printChange()"
+              id="exampleRadios1" [value]="1">
+            <label class="form-check-label" for="exampleRadios1">
+              Fusionner les fichiers et produire un rapport excel de commissions
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [(ngModel)]="this.printingOption" (change)="this.printChange()"
+              id="exampleRadios2" [value]="2">
+            <label class="form-check-label" for="exampleRadios2">
+              Rapprocher les opérations avec le Cash-IT et le produire un rapport excel de rapprochement
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [(ngModel)]="this.printingOption" (change)="this.printChange()"
+              id="exampleRadios3" [value]="3">
+            <label class="form-check-label text-danger" for="exampleRadios3">
+              <strong>Sauvegarder en Base de données et produire un rapport excel de sauvegarde</strong>
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [(ngModel)]="this.printingOption" (change)="this.printChange()"
+              id="exampleRadios4" [value]="4">
+            <label class="form-check-label text-warning" for="exampleRadios4">
+              <strong>Générer les statistiques périodiques</strong>
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [(ngModel)]="this.printingOption" (change)="this.printChange()"
+              id="exampleRadios5" [value]="5">
+            <label class="form-check-label text-info" for="exampleRadios5">
+              <strong>Extraire les données en base de données Task Manager</strong>
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [(ngModel)]="this.printingOption" (change)="this.printChange()"
+              id="exampleRadios6" [value]="6">
+            <label class="form-check-label text-primary" for="exampleRadios6">
+              <strong>Extraire le rapport global de rapprochement <i>(tous les produits inclus)</i></strong>
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" [(ngModel)]="this.printingOption" (change)="this.printChange()"
+              id="exampleRadios7" [value]="7">
+            <label class="form-check-label text-warning" for="exampleRadios7">
+              <strong>Extraire le rapport <i>des manquants Cash-IT</i></strong>
+            </label>
+          </div>
+        </div>
+
+        <div class="bgc-white p-20 bd my-4">
+          <div>
+            <div class="px-4">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="this.merge" id="defaultCheck1"
+                [disabled]="this.printingOption === 2">
+              <label class="form-check-label h6" for="defaultCheck1">
+                Grouper les fichiers par catégories dans une même feuille
+              </label>
+            </div>
+            <div class="px-4">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="this.progressive"
+                (change)="this.printingOption = this.progressive === false ? 1 : this.printingOption"
+                id="defaultCheck2">
+              <label class="form-check-label h6" for="defaultCheck2">
+                Charger les fichiers en plusieurs fois et générer le fichier cumul sur demande/validation
+              </label>
+            </div>
+            <div class="px-4" *ngIf="this.printingOption === 2">
+              <input class="form-check-input" type="checkbox" [(ngModel)]="this.bdclosing" id="defaultCheck3">
+              <label class="form-check-label h6" for="defaultCheck3">
+                Faire un rapprochement basé sur les données en base de données Task Manager
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="bgc-white p-20 bd my-4">
+          <h6 class="c-grey-900">Description</h6>
+          <hr>
+          <div class="mT-30">
+            <div class="container">
+              <p>Cette section permet de tirer des commissions à partir de tout fichier <b>Origine/Source</b>. Si le
+                chargement est fidèle,
+                les stats hebdomadaires/mensuelles pourront être automatiquement calculées et <b>envoyés par mail</b>
+                avec des
+                <b>valeurs justes</b></p>
+              <br>
+              <ul>
+                <li><b>Flash Transfer</b>: Importez le fichier plateforme source (non modifié) Flash Transfer et le
+                  système va l'organiser et calculer pour les commissions par transactions et par type (Envois et
+                  Retraits)</li>
+                <li><b>Moneygram</b>: Importez le fichier plateforme source (non modifié) Moneygram et le système va
+                  l'organiser et calculer pour les commissions par transactions et par type (Envois et Retraits)</li>
+                <li><b>MTN MoMo</b>: Importez le fichier d'activité (<b>à ne pas confondre avec le fichier de
+                    commission</b>) MoMo et le système va l'organiser et calculer pour les commissions par transactions
+                  et par produits (DMM, RMM, etc...)</li>
+                <li><b>Orange Money</b>: Importez le fichier source Orange Money et le système va l'organiser et
+                  calculer pour les commissions par transactions et par catégories (Dépots, Retraits, C2C, etc...)</li>
+                <li><b>Rapid Transfer</b>: Importez le fichier plateforme source (non modifié) Rapid Transfer et le
+                  système va l'organiser et calculer pour les commissions par transactions et par type (Envois et
+                  Retraits)</li>
+                <li><b>RIA</b>: Importez le fichier plateforme source (non modifié) RIA et le système va l'organiser et
+                  calculer pour les commissions par transactions et par type (Envois et Retraits)</li>
+                <li><b>Smobilpay</b>: Importez le fichier plateforme source (non modifié) Smobilpay et le système va
+                  l'organiser et calculer pour les commissions par transactions et par type (ENEO, Camwater, Recharge
+                  Orange etc...)</li>
+                <li><b>Western Union</b>: Importez le fichiers de commission source (non modifié) Western Union (<b>à ne
+                    pas confondre avec le fichier d'activité</b>) et le système va l'organiser et calculer pour les
+                  commissions par transactions et par type (Envois et Retraits)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal -->
+  <div class="modal mod fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="addControleLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Boite de dialogue</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <div class="form-group row" *ngIf="(this.bdclosing === true || this.printingOption === 5) && this.printingOption !== 6">
+            <label for="product" class="col-2 col-form-label">Produit</label>
+            <div class="col-10">
+              <select class="custom-select" id="product" [(ngModel)]="this.product">
+                <option *ngFor="let p of products" [value]="p">{{p}}</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="startdate" class="col-2 col-form-label">Période du</label>
+            <div class="col-10">
+              <input class="form-control" type="datetime-local" id="startdate"
+                [ngModel]="this.cashitdate1 | date: 'yyyy-MM-ddTHH:mm'"
+                (ngModelChange)="this.cashitdate1 = setToDate($event); this.cashitdate2 = setToDate($event)">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="enddate" class="col-2 col-form-label">Jusqu'à</label>
+            <div class="col-10">
+              <input class="form-control" type="datetime-local" id="enddate"
+                [ngModel]="this.cashitdate2 | date: 'yyyy-MM-ddTHH:mm'"
+                (ngModelChange)="this.cashitdate2 = setToDate($event)">
+            </div>
+          </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+          <button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-primary"
+            *ngIf="this.printingOption < 4 && bdclosing === false" (click)="this.rapprocher()">Rapprocher le
+            fichier</button>
+          <button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-danger"
+            *ngIf="this.printingOption < 4 && bdclosing === true" (click)="this.rapprocher()"
+            [disabled]="this.product.length === 0">
+            Rapprocher la base de
+            données</button>
+          <button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-warning"
+            *ngIf="this.printingOption === 4" (click)="this.genererStats()">Extraire les statistiques de cette
+            période</button>
+          <button class="btn btn-info"  data-dismiss="modal" aria-label="Close" 
+            *ngIf="this.printingOption === 5" (click)="this.extractBD()"
+            [disabled]="this.product.length === 0">
+            Extraire les données en base de données
+          </button>
+          <button class="btn btn-primary"  data-dismiss="modal" aria-label="Close" 
+            *ngIf="this.printingOption === 6" (click)="this.extractTMGlobal()">
+            Générer rapport global de rapprochement
+          </button>
+          <button class="btn btn-warning"  data-dismiss="modal" aria-label="Close" 
+            *ngIf="this.printingOption === 7" (click)="this.getManquants()">
+            Générer rapport des manquants Cash-IT
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

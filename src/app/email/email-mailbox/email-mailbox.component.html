@@ -1,0 +1,258 @@
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<main>
+  <div>
+    <div class="panel rounded shadow panel-teal">
+      <div class="panel-heading">
+        <div class="pull-left">
+          <h3 class="panel-title"> Inbox </h3>
+        </div>
+        <div class="pull-right">
+          <!-- <form action="#" class="form-horizontal mr-5 mt-3">
+            <div class="form-group no-margin no-padding has-feedback">
+              <input type="text" class="form-control no-border" placeholder="Search mail">
+              <button type="submit" class="btn btn-theme fa fa-search form-control-feedback"></button>
+            </div>
+          </form> -->
+        </div>
+        <div class="clearfix"></div>
+      </div><!-- /.panel-heading -->
+      <div class="panel-body no-padding">
+
+        <div style="height: 75vh;overflow:auto;">
+          <div class="table-responsive">
+            <table class="table table-hover table-email">
+              <tbody>
+                <tr *ngFor="let mail of this.mails" class="unread selected" (click)="selectEmail(mail)">
+                  <td>
+                    <div class="ckbox ckbox-theme">
+                      <input id="checkbox1" type="checkbox" checked="checked" class="mail-checkbox">
+                      <label for="checkbox1"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="#" class="star star-checked"><i class="fa fa-star"></i></a>
+                  </td>
+                  <td>
+                    <div class="media">
+                      <a href="#" class="pull-left">
+                        <img alt="..." src="https://bootdey.com/img/Content/avatar/avatar1.png" class="media-object">
+                      </a>
+                      <div class="media-body">
+                        <h4 class="text-primary px-4">{{ mail.motif + ' ~~> ' + mail.byName }}</h4>
+                        <p class="email-summary px-4"><strong>{{mail.topic}}</strong> <span
+                            class="badge badge-success mx-4">New</span> </p>
+                        <span class="media-meta">{{mail.date.toDate() | date: 'dd-MM-yyyy HH:mm'}}</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="unread" *ngIf="this.mails.length === 0">
+                  <td>
+                    <div class="ckbox ckbox-theme">
+                      <input id="checkbox3" type="checkbox" checked="checked" class="mail-checkbox">
+                      <label for="checkbox3"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="#" class="star star-checked"><i class="fa fa-star"></i></a>
+                  </td>
+                  <td>
+                    <div class="media w-100" style="width: 100%;">
+
+                      <div class="d-flex flex-column">
+                        <div class="d-flex justify-content-around">
+                          <h4 class="text-primary"> Aucun mail pour l'instant </h4>
+                        </div>
+                      </div>
+                      <!-- <div class="media-body">
+                        <h4 class="text-primary">---------------- Aucun mail pour l'instant ---------------- </h4>
+                        <p class="email-summary"> ---------------- Aucun mail pour l'instant ---------------- <span
+                            class="label label-success">Vide</span> </p>
+                        <span class="media-meta">Aujourd'hui</span>
+                        <span class="media-attach"><i class="fa fa-paperclip"></i></span>
+                      </div> -->
+                    </div>
+                  </td>
+                </tr>
+                <!-- <tr>
+                  <td>
+                    <div class="ckbox ckbox-theme">
+                      <input id="checkbox4" type="checkbox" class="mail-checkbox">
+                      <label for="checkbox4"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="#" class="star"><i class="fa fa-star"></i></a>
+                  </td>
+                  <td>
+                    <div class="media">
+                      <a href="#" class="pull-left">
+                        <img alt="..." src="https://bootdey.com/img/Content/avatar/avatar4.png" class="media-object">
+                      </a>
+                      <div class="media-body">
+                        <h4 class="text-primary">Toni Mriang</h4>
+                        <p class="email-summary"><strong>Check out new template</strong> Laboris nisi ut aliquip ex ea
+                          commodo consequat... <span class="label label-warning">Urgent</span></p>
+                        <span class="media-meta">Jul 02</span>
+                        <span class="media-attach"><i class="fa fa-paperclip"></i><i class="fa fa-share"></i></span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="selected">
+                  <td>
+                    <div class="ckbox ckbox-theme">
+                      <input id="checkbox5" type="checkbox" checked="checked" class="mail-checkbox">
+                      <label for="checkbox5"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="#" class="star star-checked"><i class="fa fa-star"></i></a>
+                  </td>
+                  <td>
+                    <div class="media">
+                      <a href="#" class="pull-left">
+                        <img alt="..." src="https://bootdey.com/img/Content/avatar/avatar5.png" class="media-object">
+                      </a>
+                      <div class="media-body">
+                        <h4 class="text-primary">Bella negoro</h4>
+                        <p class="email-summary"><strong>Monthly sales report</strong> Excepteur sint occaecat cupidatat
+                          non proident... </p>
+                        <span class="media-meta">Jul 02</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="unread">
+                  <td>
+                    <div class="ckbox ckbox-theme">
+                      <input id="checkbox6" type="checkbox" class="mail-checkbox">
+                      <label for="checkbox6"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="#" class="star"><i class="fa fa-star"></i></a>
+                  </td>
+                  <td>
+                    <div class="media">
+                      <a href="#" class="pull-left">
+                        <img alt="..." src="https://bootdey.com/img/Content/avatar/avatar6.png" class="media-object">
+                      </a>
+                      <div class="media-body">
+                        <h4 class="text-primary">Kim Mbako</h4>
+                        <p class="email-summary"><strong>1 New job</strong> Sed ut perspiciatis unde omnis iste natus
+                          error sit voluptatem... <span class="label label-danger">Promotion</span></p>
+                        <span class="media-meta">Jul 01</span>
+                        <span class="media-attach"><i class="fa fa-paperclip"></i></span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="ckbox ckbox-theme">
+                      <input id="checkbox7" type="checkbox" class="mail-checkbox">
+                      <label for="checkbox7"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="#" class="star"><i class="fa fa-star"></i></a>
+                  </td>
+                  <td>
+                    <div class="media">
+                      <a href="#" class="pull-left">
+                        <img alt="..." src="https://bootdey.com/img/Content/avatar/avatar6.png" class="media-object">
+                      </a>
+                      <div class="media-body">
+                        <h4 class="text-primary">Pack Suparman</h4>
+                        <p class="email-summary"><strong>You sold a item!</strong> Ut enim ad minim veniam, quis nostrud
+                          exercitation... </p>
+                        <span class="media-meta">Jul 01</span>
+                        <span class="media-attach"><i class="fa fa-users"></i></span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="ckbox ckbox-theme">
+                      <input id="checkbox8" type="checkbox" class="mail-checkbox">
+                      <label for="checkbox8"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="#" class="star"><i class="fa fa-star"></i></a>
+                  </td>
+                  <td>
+                    <div class="media">
+                      <a href="#" class="pull-left">
+                        <img alt="..." src="https://bootdey.com/img/Content/avatar/avatar6.png" class="media-object">
+                      </a>
+                      <div class="media-body">
+                        <h4 class="text-primary">Jeddy Mentri</h4>
+                        <p class="email-summary"><strong>IOS Developer</strong> Ut enim ad minim veniam, quis nostrud
+                          exercitation... </p>
+                        <span class="media-meta">Jun 25</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="ckbox ckbox-theme">
+                      <input id="checkbox9" type="checkbox" class="mail-checkbox">
+                      <label for="checkbox9"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="#" class="star"><i class="fa fa-star"></i></a>
+                  </td>
+                  <td>
+                    <div class="media">
+                      <a href="#" class="pull-left">
+                        <img alt="..." src="https://bootdey.com/img/Content/avatar/avatar1.png" class="media-object">
+                      </a>
+                      <div class="media-body">
+                        <h4 class="text-primary">Daddy Botak</h4>
+                        <p class="email-summary"><strong>User interface Status</strong> Ut enim ad minim veniam, quis
+                          nostrud exercitation... </p>
+                        <span class="media-meta">Jun 23</span>
+                        <span class="media-attach"><i class="fa fa-paperclip"></i></span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="unread">
+                  <td>
+                    <div class="ckbox ckbox-theme">
+                      <input id="checkbox10" type="checkbox" class="mail-checkbox">
+                      <label for="checkbox10"></label>
+                    </div>
+                  </td>
+                  <td>
+                    <a href="#" class="star"><i class="fa fa-star"></i></a>
+                  </td>
+                  <td>
+                    <div class="media">
+                      <a href="#" class="pull-left">
+                        <img alt="..." src="https://bootdey.com/img/Content/avatar/avatar6.png" class="media-object">
+                      </a>
+                      <div class="media-body">
+                        <h4 class="text-primary">Sarah Tingting</h4>
+                        <p class="email-summary"><strong>Java Developer + 2 new jobs</strong> Nemo enim ipsam voluptatem
+                          quia voluptas sit aspernatur... </p>
+                        <span class="media-meta">Jun 05</span>
+                        <span class="media-attach"><i class="fa fa-warning"></i></span>
+                      </div>
+                    </div>
+                  </td>
+                </tr> -->
+              </tbody>
+            </table>
+          </div><!-- /.table-responsive -->
+        </div>
+
+      </div><!-- /.panel-body -->
+    </div><!-- /.panel -->
+  </div>
+</main>

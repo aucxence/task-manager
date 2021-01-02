@@ -1,0 +1,102 @@
+<main>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+  <div class="col-12">
+    <div class="container" style="height: 75vh;overflow:auto;">
+      <div class="row inbox">
+        <!--/.col-->
+
+        <div>
+
+          <div class="panel panel-default">
+
+            <div class="panel-body message">
+
+              <span class="btn-group">
+                <button class="btn btn-default"><span class="fa fa-star"></span></button>
+                <button class="btn btn-default"><span class="fa fa-star-o"></span></button>
+                <button class="btn btn-default"><span class="fa fa-bookmark-o"></span></button>
+              </span>
+
+              <span class="btn-group">
+                <button class="btn btn-default"><span class="fa fa-mail-reply"></span></button>
+                <button class="btn btn-default"><span class="fa fa-mail-reply-all"></span></button>
+                <button class="btn btn-default"><span class="fa fa-mail-forward"></span></button>
+              </span>
+
+              <button class="btn btn-default"><span class="fa fa-trash-o"></span></button>
+
+              <span class="btn-group">
+                <button class="btn btn-default dropdown-toggle" data-toggle="dropdown"><span class="fa fa-tags"></span>
+                  <span class="caret"></span></button>
+                <ul class="dropdown-menu">
+                  <li><a href="#">add label <span class="label label-danger"> Home</span></a></li>
+                  <li><a href="#">add label <span class="label label-info">Job</span></a></li>
+                  <li><a href="#">add label <span class="label label-success">Clients</span></a></li>
+                  <li><a href="#">add label <span class="label label-warning">News</span></a></li>
+                </ul>
+              </span>              
+
+              <div class="content">
+                <div class="form-group">
+                  <angular-editor name="emailcontent" [(ngModel)]="this.mail.body" [config]="config"></angular-editor>
+                </div>
+              </div>
+
+              <!-- <div class="attachments">
+                <ul>
+                  <li>
+                    <span class="label label-danger">zip</span> <b>bootstrap.zip</b> <i>(2,5MB)</i>
+                    <span class="quickMenu">
+                      <a href="#" class="fa fa-search"><i></i></a>
+                      <a href="#" class="fa fa-share"><i></i></a>
+                      <a href="#" class="fa fa-cloud-download"><i></i></a>
+                    </span>
+                  </li>
+                  <li>
+                    <span class="label label-info">txt</span> <b>readme.txt</b> <i>(7KB)</i>
+                    <span class="quickMenu">
+                      <a href="#" class="fa fa-search"><i></i></a>
+                      <a href="#" class="fa fa-share"><i></i></a>
+                      <a href="#" class="fa fa-cloud-download"><i></i></a>
+                    </span>
+                  </li>
+                  <li>
+                    <span class="label label-success">xls</span> <b>spreadsheet.xls</b> <i>(984KB)</i>
+                    <span class="quickMenu">
+                      <a href="#" class="fa fa-search"><i></i></a>
+                      <a href="#" class="fa fa-share"><i></i></a>
+                      <a href="#" class="fa fa-cloud-download"><i></i></a>
+                    </span>
+                  </li>
+                </ul>
+              </div> -->
+
+              <!-- <form method="post" action="">
+
+                <div class="form-group">
+
+                  <textarea class="form-control" id="message" name="body" rows="12"
+                    placeholder="Click here to reply"></textarea>
+
+                </div>
+
+                <div class="form-group">
+
+                  <button tabindex="3" type="submit" class="btn btn-success">Send message</button>
+
+                </div>
+
+              </form> -->
+
+            </div>
+
+          </div>
+
+        </div>
+        <!--/.col-->
+
+      </div>
+    </div>
+  </div>
+
+</main>

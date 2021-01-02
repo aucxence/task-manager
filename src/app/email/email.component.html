@@ -1,0 +1,33 @@
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<br>
+<br>
+<div class="container bootdey">
+  <div class="email-app">
+    <nav>
+      <a routerLink="./send"  *ngIf="this.fonction >= 1000" class="btn btn-success btn-block">Nouveau</a>
+      <ul class="nav">
+        <li class="nav-item">
+          <a class="nav-link" routerLink="./mailbox"><i class="fa fa-inbox"></i> Inbox <span class="badge badge-danger">4</span></a>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="#"><i class="fa fa-star"></i> Stared</a>
+        </li> -->
+        <li class="nav-item" *ngIf="this.fonction >= 1000">
+          <a class="nav-link" routerLink="./sendbox"><i class="fa fa-rocket"></i> Sent</a>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" routerLink="./conges"><i class="fa fa-trash-o"></i> Trash</a>
+        </li> -->
+        <li class="nav-item" *ngIf="this.fonction >= 1000">
+          <a class="nav-link" routerLink="./derogation"><i class="fa fa-bookmark"></i> Dérogation</a>
+        </li>
+        <!-- <li class="nav-item" *ngIf="this.fonction >= 1000">
+          <a class="nav-link" routerLink="./discipline"><i class="fa fa-bookmark"></i> Discipline</a>
+        </li> -->
+      </ul>
+    </nav>
+    <div style="width: 100%;">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>

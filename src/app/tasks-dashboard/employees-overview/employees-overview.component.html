@@ -1,0 +1,159 @@
+<div id='loader' [ngClass]="{
+    'fadeOut': this.fadeOut
+  }">
+  <div class="spinner"></div>
+</div>
+<!-- ### $App Screen Content ### -->
+<main class='main-content bgc-grey-100' style="padding-top: 0!important;">
+  <div id='mainContent' class="row gap-20 masonry pos-r my-4">
+    <div class="col-12 py-4 my-4">
+      <!-- <div class="masonry-sizer col-md-6" style="margin-top: 0px !important;"></div> -->
+      <div class="masonry-item  w-100 col-12">
+        <div class="row gap-20">
+          <!-- #Toatl Visits ==================== -->
+          <div class='col-md-4' *ngFor="let user of this.allusers; let i = index">
+            <div class="layers bd bgc-white p-20">
+              <div class="layer w-100 mB-10">
+                <h6 class="lh-1">{{user.firstname + ' ' + user.lastname}}</h6>
+              </div>
+              <div class="layer w-100">
+                <div class="peers ai-sb fxw-nw">
+                  <div class="peer peer-greed">
+                    <span id="sparklinedash"></span>
+                  </div>
+                  <div class="peer justify-content-around">
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-green-50 c-green-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.user.alltasks.toString()}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.user.donetasks.toString()}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.user.performance.toString() | slice:0:4}} {{'%'}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500 mx-2"
+                      style="font-size: 13px;" (click)="this.getEmployeeExecutions(i)">
+                      <fa-icon [icon]="faFileDownload"></fa-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <hr>
+  <div class="row gap-20 masonry pos-r my-4">
+    <div class="col-12 py-4 my-4">
+      <!-- <div class="masonry-sizer col-md-6" style="margin-top: 0px !important;"></div> -->
+      <div class="masonry-item  w-100 col-12">
+        <div class="row gap-20">
+          <!-- #Toatl Visits ==================== -->
+          <div class='col-md-4'>
+            <div class="layers bd bgc-white p-20">
+              <div class="layer w-100 mB-10">
+                <h6 class="lh-1">Performance générale</h6>
+              </div>
+              <div class="layer w-100">
+                <div class="peers ai-sb fxw-nw">
+                  <div class="peer peer-greed">
+                    <span id="sparklinedash"></span>
+                  </div>
+                  <div class="peer justify-content-around">
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-green-50 c-green-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.alltasks.length.toString()}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.donetasks.length.toString()}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.globalperformance.toString() | slice:0:4}} {{'%'}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500 mx-2"
+                      style="font-size: 13px;" (click)="this.generateOverallReport()">
+                      <fa-icon [icon]="faFileDownload"></fa-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class='col-md-4'>
+            <div class="layers bd bgc-white p-20">
+              <div class="layer w-100 mB-10">
+                <h6 class="lh-1">Performance front office</h6>
+              </div>
+              <div class="layer w-100">
+                <div class="peers ai-sb fxw-nw">
+                  <div class="peer peer-greed">
+                    <span id="sparklinedash"></span>
+                  </div>
+                  <div class="peer justify-content-around">
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-green-50 c-green-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.itessesall.toString()}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.itessesdone.toString()}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.itessesperf.toString() | slice:0:4}} {{'%'}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500 mx-2"
+                      style="font-size: 13px;" (click)="this.generateItessesOverallReport()">
+                      <fa-icon [icon]="faFileDownload"></fa-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class='col-md-4'>
+            <div class="layers bd bgc-white p-20">
+              <div class="layer w-100 mB-10">
+                <h6 class="lh-1">Performance back office</h6>
+              </div>
+              <div class="layer w-100">
+                <div class="peers ai-sb fxw-nw">
+                  <div class="peer peer-greed">
+                    <span id="sparklinedash"></span>
+                  </div>
+                  <div class="peer justify-content-around">
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-green-50 c-green-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.nonitessesall.toString()}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-red-50 c-red-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.nonitessesdone.toString()}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-blue-50 c-blue-500 mx-2"
+                      style="font-size: 13px;">
+                      {{this.nonitessesperf.toString() | slice:0:4}} {{'%'}}
+                    </span>
+                    <span class="d-ib lh-0 va-m fw-600 bdrs-10em pX-15 pY-15 bgc-purple-50 c-purple-500 mx-2"
+                      style="font-size: 13px;" (click)="this.generateNonItessesOverallReport()">
+                      <fa-icon [icon]="faFileDownload"></fa-icon>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+</main>

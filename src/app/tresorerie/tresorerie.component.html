@@ -1,0 +1,155 @@
+<div class="p-4 m-4">
+  <div id="accordion">
+    <div class="card">
+      <div class="card-header" id="headingOne">
+        <h5 class="mb-0">
+          <button class="btn btn-link" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true"
+            aria-controls="collapseOne">
+            Rapprochements Western Union Commissions et rapport d'Activité
+          </button>
+        </h5>
+      </div>
+
+      <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+        <div class="card-body">
+          <div class="container p-4 align-middle">
+            <div class="row">
+              <div class="col-6">
+                <div class="shadow-sm p-3 mb-5 bg-white rounded">
+                  <div class="form-group">
+                    <label for="file1">Fichier d'Activité</label>
+                    <input #firstSelector type="file" class="form-control-file" id="file1"
+                      (change)="this.incomingfile($event)"
+                      accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.csv"
+                      multiple>
+                    <span style="text-align: right;">
+                      <button type="button" class="close btn btn-info" (click)="resetWUFile1()"
+                        [disabled]="this.first.length === 0">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="shadow-sm p-3 mb-5 bg-white rounded">
+                  <div class="form-group">
+                    <label for="file2">Fichiers de Commissions Envois et Retraits</label>
+                    <input #secondSelector type="file" class="form-control-file" id="file2"
+                      (change)="this.incomingfile($event)"
+                      accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.csv"
+                      multiple>
+                    <span style="text-align: right;">
+                      <button type="button" class="close btn btn-info" (click)="resetWUFile2()"
+                        [disabled]="this.second.length === 0">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="shadow-sm p-3 bg-white rounded">
+              <div class="d-flex justify-content-around">
+                <button class="btn btn-info col-4" (click)="this.rapprochWU()"
+                  [disabled]="this.first.length === 0 || this.second.length === 0">
+                  Rapprocher les 2 fichiers WU
+                </button>
+                <button class="btn btn-danger col-4" (click)="this.resetWUFiles()"
+                  [disabled]="this.first.length === 0 || this.second.length === 0">
+                  Réinitialiser
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header" id="headingTwo">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false"
+            aria-controls="collapseTwo">
+            Rapprochements MOMO rapport d'activité et rapport de commissions
+          </button>
+        </h5>
+      </div>
+      <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordion">
+        <div class="card-body">
+          <div class="container p-4 align-middle">
+            <div class="row">
+              <div class="col-6">
+                <div class="shadow-sm p-3 mb-5 bg-white rounded">
+                  <div class="form-group">
+                    <label for="file11">Fichier d'Activité MOMO</label>
+                    <input #firstSelectorm type="file" class="form-control-file" id="file11"
+                      (change)="this.incomingfile($event)"
+                      accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.csv"
+                      multiple>
+                    <span style="text-align: right;">
+                      <button type="button" class="close btn btn-info" (click)="resetMMFile1()"
+                        [disabled]="this.first.length === 0">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6">
+                <div class="shadow-sm p-3 mb-5 bg-white rounded">
+                  <div class="form-group">
+                    <label for="file22">Fichiers de Commissions MOMO</label>
+                    <input #secondSelectorm type="file" class="form-control-file" id="file22"
+                      (change)="this.incomingfile($event)"
+                      accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.csv"
+                      multiple>
+                    <span style="text-align: right;">
+                      <button type="button" class="close btn btn-info" (click)="resetMMFile2()"
+                        [disabled]="this.second.length === 0">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="shadow-sm p-3 bg-white rounded">
+              <div class="d-flex justify-content-around">
+                <button class="btn btn-info col-4" (click)="this.rapprochMOMO()"
+                  [disabled]="this.first.length === 0 || this.second.length === 0">
+                  Rapprocher les 2 fichiers MOMO
+                </button>
+                <button class="btn btn-danger col-4" (click)="this.resetMMFiles()"
+                  [disabled]="this.first.length === 0 || this.second.length === 0">
+                  Réinitialiser
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-header" id="headingThree">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree"
+            aria-expanded="false" aria-controls="collapseThree">
+            Autres rapprochements
+          </button>
+        </h5>
+      </div>
+      <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+        <div class="card-body">
+          Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon
+          officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf
+          moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim
+          keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur
+          butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably
+          haven't heard of them accusamus labore sustainable VHS.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,80 @@
+<main style="padding: 3rem;">
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+<link href="https://select2.github.io/dist/css/select2.min.css" rel="stylesheet">
+<script src="https://select2.github.io/dist/js/select2.full.js"></script>
+<div class="col-md-12">
+  <div class="panel panel-default">
+    <div class="panel-body message">
+      <form class="form-horizontal" role="form">
+        <div class="form-group row">
+          <label for="to" class="col-sm-2 control-label">A:</label>
+          <div class="col-sm-10">
+            <!-- <input type="email" class="form-control select2-offscreen" id="to" placeholder="Type email" tabindex="-1"> -->
+            <ng2-completer inputClass="form-control select2-offscreen" matchClass="font-weight-bold"
+              [(ngModel)]="this.sendToName"
+              name="sendto"
+              (selected)="updateSendTo($event)"
+              autoMatch="true" [maxChars]="3" autofocus="true" [datasource]="this.dataService" [minSearchLength]="0">
+            </ng2-completer>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="motif" class="col-sm-2 control-label">Motif:</label>
+          <div class="col-sm-10">
+            <select 
+              class="custom-select mb-2 mr-sm-2 mb-sm-0" 
+              name="motif" id="inlineFormCustomSelect" 
+              [(ngModel)]="this.motif"
+              (change)="this.reunion()">
+              <option selected value="Demande d'explication">Demande d'explication</option>
+              <option value="Absence à la réunion">Absence à la réunion Mensuelle</option>
+              <option value="Absence au travail">Absence au travail</option>
+              <option value="Avertissement">Avertissement</option>
+              <option value="Blame">Blame</option>
+              <option value="Mise à pied 1 jour">Mise à pied 1 jour</option>
+              <option value="Mise à pied 2 jours">Mise à pied 2 jours</option>
+              <option value="Mise à pied 3 jours">Mise à pied 3 jours</option>
+              <option value="Mise à pied 4 jours">Mise à pied 4 jours</option>
+              <option value="Mise à pied 5 jours">Mise à pied 5 jours</option>
+              <option value="Mise à pied 6 jours">Mise à pied 6 jours</option>
+              <option value="Mise à pied 7 jours">Mise à pied 7 jours</option>
+              <option value="Mise à pied 8 jours">Mise à pied 8 jours</option>
+              <option value="Mise à pied 9 jours et plus">Mise à pied 9 jours et plus</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group row">
+          <label for="bcc" class="col-sm-2 control-label">Sujet:</label>
+          <div class="col-sm-10">
+            <input type="text" name="sujet" [(ngModel)]="this.topic" class="form-control select2-offscreen" id="bcc" placeholder="Type email" tabindex="-1">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <angular-editor name="emailcontent" [(ngModel)]="emailcontent" [config]="config"></angular-editor>
+        </div>
+
+      </form>
+
+      <div class="html py-4 my-4">
+        {{ emailcontent }}
+      </div>
+
+      <div class="d-flex justify-content-around">
+        <button 
+          type="submit" 
+          class="btn btn-success col-5" 
+          (click)="this.validate()"
+          [disabled]="this.emailcontent.length === 0
+          || this.sendToName.length === 0
+          || this.topic.length === 0
+          || this.motif.length === 0">Envoyer</button>
+        <!-- <button type="submit" class="btn btn-default">Draft</button> -->
+        <button type="submit" (click)="reset()" class="btn btn-danger col-5">Annuler</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--/.col-->
+
+</main>

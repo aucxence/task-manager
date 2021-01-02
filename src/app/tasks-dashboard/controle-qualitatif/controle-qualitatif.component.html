@@ -1,0 +1,430 @@
+<div id='loader' [ngClass]="{
+    'fadeOut': this.fadeOut
+  }">
+  <div class="spinner"></div>
+</div>
+<main class='main-content bgc-grey-100' style="padding-top: 0!important;">
+  <div class="masonry-item col-12">
+    <!-- #Site Visits ==================== -->
+    <div class="bd bgc-white">
+      <div class="peers fxw-nw@lg+ ai-s">
+        <div class="peer bdL p-20 w-50p@lg+ w-100p@lg-">
+
+          <div class="">
+            <div class="card-hover-shadow-2x mb-3 card">
+              <div class="card-header-tab card-header">
+                <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i
+                    class="fa fa-itesses"></i>&nbsp;Itesses</div>
+              </div>
+              <div class="scroll-area-sm">
+                <div style="position: static;" class="ps ps--active-y">
+                  <div class="ps-content">
+                    <ul class=" list-group list-group-flush" id="wrapping_head">
+
+                      <li class="list-group-item " *ngFor="let itesse of this.itesses; let i = index">
+                        <div class="todo-indicator badge-danger" [ngClass]="{
+                                        'bg-warning': this.itesse.fonction === 0,
+                                        'bg-danger': this.itesse.fonction === 250,
+                                        'bg-success': this.itesse.fonction === 500,
+                                        'bg-primary': this.itesse.fonction === 750,
+                                        'bg-dark': this.itesse.fonction === 1000
+                                      }"></div>
+                        <div class="widget-content p-0">
+                          <div class="widget-content-wrapper">
+                            <div class="widget-content-left mr-2">
+                              <div class="custom-checkbox custom-control">
+                                <input class="custom-control-input" type="checkbox" [id]="'checkingbox' + i"
+                                  (change)="this.toggleEvaluationStatus(itesse)"
+                                  [checked]="this.itesse.evaluation===true">
+                                <label class="custom-control-label" [for]="'checkingbox' + i">&nbsp;
+                                </label>
+                              </div>
+                            </div>
+                            <div class="widget-content-left" data-toggle="modal" data-target="#updateModal">
+                              <div class="widget-heading">
+                                {{this.itesse.firstname + ' ' + this.itesse.lastname}}
+                                <div class="badge badge-danger ml-2" [ngClass]="{
+                                    'bg-warning': this.itesse.fonction === 0,
+                                    'bg-danger': this.itesse.fonction === 250,
+                                    'bg-success': this.itesse.fonction === 500,
+                                    'bg-primary': this.itesse.fonction === 750,
+                                    'bg-dark': this.itesse.fonction === 1000
+                                  }">{{this.fonctions[this.itesse.fonction]}}</div>
+                                <span *ngIf="this.itesse.total !== 100 && this.itesse.total !== 0"
+                                  class="ml-2 badge badge-warning" style="color: white!important;" [ngClass]="{
+                                            'bg-success': this.itesse.finalnote >= 80,
+                                            'bg-danger': this.itesse.finalnote < 80
+                                          }">
+                                  {{this.itesse.finalnote + '/' + this.itesse.total }}
+                                </span>
+                              </div>
+                              <div class="widget-subheading">
+                                <span *ngIf="this.itesse.notes.length > 0; else nosubitesses">
+                                  <i>Nombre de contrôles:
+                                    <span class="text-danger">
+                                      {{this.itesse.notes.length}}
+                                    </span>
+                                  </i>
+                                </span>
+                                <ng-template #nosubitesses>
+                                  <span class="text-danger">
+                                    Aucun contrôle
+                                  </span>
+                                </ng-template>
+                              </div>
+                            </div>
+                            <div class="widget-content-right">
+                              <button class="border-0 btn-transition btn btn-outline-success" data-toggle="collapse"
+                                attr.data-target="#collapseOne{{i}}" aria-expanded="true"
+                                attr.aria-controls="collapseOne{{i}}" [disabled]="this.itesse.notes.length === 0">
+                                <span class="fa fa-chevron-down"></span>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div [id]="'collapseOne' + i" class="collapse" data-parent="#wrapping_head">
+
+                          <div class="task d-flex flex-column pt-2 align-items-center"
+                            *ngIf="this.itesse.notes.length > 0">
+
+                            <label class="checkbox border-info px-4 col-9"
+                              *ngFor="let note of this.itesse.notes; let j = index;">
+                              <div class="custom-control custom-checkbox mr-sm-2">
+                                <input class="custom-control-input" type="checkbox" [checked]="note.note < 80"
+                                  [id]="'subtsk_' + i + '_' + j" [ngClass]="{
+                                    'border-danger':note.note < 80
+                                  }">
+                                <label class="custom-control-label" [ngClass]="{
+                                  'text-danger':true
+                                }" [for]="'subtsk_' + i + '_' + j">{{note.date.toDate() | date: 'EEEE dd MMMM, yyyy'}}
+                                </label>
+                                <span class="ml-2 badge badge-warning" style="color: white!important;" [ngClass]="{
+                                    'bg-success': this.note.note >= 80,
+                                    'bg-danger': this.note.note < 80
+                                  }">
+                                  {{' ' + this.note.note + '/'}} {{ this.note.total }}
+                                </span>
+                                <span class="ml-2">
+                                    <i>Contrôle effectué par:
+                                      <span class="text-danger">
+                                        {{this.note.doneby}}
+                                      </span>
+                                    </i>
+                                  </span>
+                                <a (click)="this.deleteControle(itesse, j)" class="pull-right"><span
+                                    class="fa fa-trash text-danger"></span></a>
+                              </div>
+
+                              <div class="widget-subheading text-center">
+                                <span *ngIf="this.note.comment.length > 0; else nosubitesses">
+                                  <i>
+                                    <span class="text-primary">
+                                      {{this.note.comment}}
+                                    </span>
+                                  </i>
+                                </span>
+                                <ng-template #nosubitesses>
+                                  <span class="text-danger">
+                                    Aucun commentaire
+                                  </span>
+                                </ng-template>
+                                <span class="ml-2">
+                                  <i>effectué à :
+                                    <span class="text-danger">
+                                      {{ this.note.agence }}
+                                    </span>
+                                  </i>
+                                </span>
+                              </div>
+                            </label>
+
+                          </div>
+                        </div>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+              <div class="d-block text-right card-footer">
+                <button class="btn btn-primary" data-toggle="modal" data-target="#addControle" (click)="renewModel()">Ajouter un
+                  contrôle</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="peer bdL p-20 w-50p@lg+ w-100p@lg-">
+          <div class="card-hover-shadow-2x mb-3 card">
+            <div class="card-header-tab card-header">
+              <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i
+                  class="fa fa-itesses"></i>&nbsp;Management</div>
+            </div>
+            <div class="scroll-area-sm">
+              <div style="position: static;" class="ps ps--active-y">
+                <div class="ps-content">
+                  <ul class=" list-group list-group-flush" id="wrapping_header">
+
+                    <li class="list-group-item " *ngFor="let itesse of this.nonitesses; let i = index">
+                      <div class="todo-indicator badge-danger" [ngClass]="{
+                        'bg-warning': this.itesse.fonction === 0,
+                        'bg-danger': this.itesse.fonction === 250,
+                        'bg-success': this.itesse.fonction === 500,
+                        'bg-primary': this.itesse.fonction === 750,
+                        'bg-dark': this.itesse.fonction === 1000
+                      }"></div>
+                      <div class="widget-content p-0">
+                        <div class="widget-content-wrapper">
+                          <div class="widget-content-left mr-2">
+                            <div class="custom-checkbox custom-control">
+                              <input class="custom-control-input" type="checkbox" [id]="'checkingbox' + i"
+                                (change)="this.toggleEvaluationStatus(itesse)"
+                                [checked]="this.itesse.evaluation===true">
+                              <label class="custom-control-label" [for]="'checkingbox' + i">&nbsp;
+                              </label>
+                            </div>
+                          </div>
+                          <div class="widget-content-left" data-toggle="modal" data-target="#updateModal">
+                            <div class="widget-heading">
+                              {{this.itesse.firstname + ' ' + this.itesse.lastname}}
+                              <div class="badge badge-danger ml-2" [ngClass]="{
+                                      'bg-warning': this.itesse.fonction === 0,
+                                      'bg-danger': this.itesse.fonction === 250,
+                                      'bg-success': this.itesse.fonction === 500,
+                                      'bg-primary': this.itesse.fonction === 750,
+                                      'bg-dark': this.itesse.fonction === 1000
+                                    }">{{this.fonctions[this.itesse.fonction]}}</div>
+                              <span *ngIf="this.itesse.total !== 100 && this.itesse.total !== 0" class="ml-2 badge badge-warning"
+                                style="color: white!important;" [ngClass]="{
+                                          'bg-success': this.itesse.finalnote >= 80,
+                                          'bg-danger': this.itesse.finalnote < 80
+                                        }">
+                                        {{'0 / 0' }}
+                              </span>
+                            </div>
+                            <div class="widget-subheading">
+                              <span *ngIf="this.itesse.notes.length > 0; else nosubitesses">
+                                <i>Nombre de contrôles:
+                                  <span class="text-danger">
+                                    {{this.itesse.notes.length}}
+                                  </span>
+                                </i>
+                              </span>
+                              <ng-template #nosubitesses>
+                                <span class="text-danger">
+                                  Aucun contrôle
+                                </span>
+                              </ng-template>
+                            </div>
+                          </div>
+                          <div class="widget-content-right">
+                            <button class="border-0 btn-transition btn btn-outline-success" data-toggle="collapse"
+                              attr.data-target="#collapseOne{{i}}" aria-expanded="true"
+                              attr.aria-controls="collapseOne{{i}}" [disabled]="this.itesse.notes.length === 0">
+                              <span class="fa fa-chevron-down"></span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div [id]="'collapseTwo' + i" class="collapse" aria-labelledby="headingTwo"
+                        data-parent="#wrapping_header">
+
+                        <div class="task d-flex flex-column pt-2 align-items-center"
+                          *ngIf="this.itesse.notes.length > 0">
+
+                          <label class="checkbox border-info px-4 col-9"
+                            *ngFor="let note of this.itesse.notes; let j = index;">
+                            <div class="custom-control custom-checkbox mr-sm-2">
+                              <input class="custom-control-input" type="checkbox" [checked]="note.note < 80"
+                                [id]="'subcheckbx_' + i + '_' + j" [ngClass]="{
+                                    'border-danger':note.note < 80
+                                  }">
+                              <label class="custom-control-label" [ngClass]="{
+                                  'strike text-danger':true
+                                }" [for]="'subcheckbx_' + i + '_' + j">{{note.date.toDate() | date: 'EEEE dd MMMM, yyyy'}}
+                              </label>
+                              <span class="ml-2 badge badge-warning" style="color: white!important;" [ngClass]="{
+                                    'bg-success': this.note.note >= 80,
+                                    'bg-danger': this.note.note < 80
+                                  }">
+                                {{' ' + this.note.note + '/'}} {{ this.note.total }}
+                              </span>
+                              <span class="ml-2">
+                                <i>Contrôle effectué par:
+                                  <span class="text-danger">
+                                    {{this.note.doneby | date: 'EEEE dd MMMM, yyyy'}}
+                                  </span>
+                                </i>
+                              </span>
+                              <a (click)="this.deleteControle(itesse, j)" class="pull-right"><span
+                                  class="fa fa-trash text-danger"></span></a>
+                            </div>
+
+                            <div class="widget-subheading">
+                              <span *ngIf="this.note.comment.length > 0; else nosubitesses">
+                                <i>
+                                  <span class="text-primary">
+                                    {{this.note.comment}}
+                                  </span>
+                                </i>
+                              </span>
+                              <ng-template #nosubitesses>
+                                <span class="text-danger">
+                                  Aucun commentaire
+                                </span>
+                              </ng-template>
+                            </div>
+                          </label>
+
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            <div class="d-block text-right card-footer">
+              <!-- <button class="mr-2 btn btn-link btn-sm">Annuler</button> -->
+              <button class="btn btn-primary" data-toggle="modal" data-target="#addControle" (click)="renewModel()">Ajouter un contrôle</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal mod fade" id="addControle" tabindex="-1" role="dialog" aria-labelledby="addControleLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Contrôle Qualitatif</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+          <div class="form-group row">
+            <label for="who" class="col-2 col-form-label">Personne contrôlée</label>
+            <div class="col-10">
+              <!-- <input class="form-control" type="text" value="Artisanal kale"> -->
+              <ng2-completer id="who" inputClass="form-control my-auto" matchClass="font-weight-bold" autoMatch="true"
+                [maxChars]="3" autofocus="true" [(ngModel)]="this.controle.whoname" [datasource]="this.dataService"
+                [minSearchLength]="0" (selected)="setSelectedControlledPerson($event)" (blur)="this.blurring()">
+              </ng2-completer>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="agence" class="col-2 col-form-label">Agence</label>
+            <div class="col-10">
+              <!-- <input class="form-control" type="text" value="Artisanal kale"> -->
+              <ng2-completer id="agence" inputClass="form-control my-auto" matchClass="font-weight-bold" autoMatch="true"
+                [maxChars]="3" autofocus="true" [(ngModel)]="this.controle.agence" [datasource]="this.agenceService"
+                [minSearchLength]="0" (selected)="setSelectedAgence($event)" (blur)="this.blurring3()">
+              </ng2-completer>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="doneby" class="col-2 col-form-label">Controlleur</label>
+            <div class="col-10">
+              <!-- <input class="form-control" type="text" value="Artisanal kale"> -->
+              <ng2-completer id="doneby" inputClass="form-control my-auto" matchClass="font-weight-bold"
+                autoMatch="true" [maxChars]="3" autofocus="false" [(ngModel)]="this.controle.doneby"
+                [datasource]="this.dataService" [minSearchLength]="0" (selected)="setSelectedController($event)"
+                (blur)="this.blurring2()" disabled>
+              </ng2-completer>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="date" class="col-2 col-form-label">Controle effectué le</label>
+            <div class="col-10">
+              <!-- <input class="form-control" type="text" value="Artisanal kale"> -->
+              <input class="form-control" type="datetime-local" id="date" [ngModel]="this.controle.date | date: 'yyyy-MM-ddTHH:mm'"
+                (ngModelChange)="this.controle.date = setToDate($event)"
+                disabled>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label class="col-2 col-form-label" for="criteria">Critère</label>
+            <div class="col-10">
+              <!-- <input class="form-control" type="text" value="Artisanal kale"> -->
+              <ul id="criteria" class="list-group list-group-flush">
+                <li class="list-group-item">
+                  <!-- Default checked -->
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" [(ngModel)]="this.controle.criteria.ponctualite" class="custom-control-input"
+                      id="check1" checked>
+                    <label class="custom-control-label" for="check1">Ponctualité</label>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <!-- Default checked -->
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" [(ngModel)]="this.controle.criteria.motivation" class="custom-control-input"
+                      id="check2">
+                    <label class="custom-control-label" for="check2">Motivation Personelle</label>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <!-- Default checked -->
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" [(ngModel)]="this.controle.criteria.accueil" class="custom-control-input"
+                      id="check3" checked>
+                    <label class="custom-control-label" for="check3">Accueil client: Enthousiasme, sourire</label>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <!-- Default checked -->
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" [(ngModel)]="this.controle.criteria.organisation"
+                      class="custom-control-input" id="check4" checked>
+                    <label class="custom-control-label" for="check4">Organisation du travail, Rapidité, Propreté
+                      PDV</label>
+                  </div>
+                </li>
+                <li class="list-group-item">
+                  <!-- Default checked -->
+                  <div class="custom-control custom-checkbox">
+                    <input type="checkbox" [(ngModel)]="this.controle.criteria.procedure" class="custom-control-input"
+                      id="check5">
+                    <label class="custom-control-label" for="check5">Respect des procédures</label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="score" class="col-2 col-form-label">Score</label>
+            <div class="col-10">
+              <!-- <input class="form-control" type="text" value="Artisanal kale"> -->
+              <input class="form-control" type="number" id="score" [(ngModel)]="this.controle.note">
+            </div>
+          </div>
+
+          <div class="form-group row">
+            <label for="comment" class="col-2 col-form-label">Remarque</label>
+            <div class="col-10">
+              <!-- <input class="form-control" type="text" value="Artisanal kale"> -->
+              <textarea rows="1" class="form-control" class="form-control" type="text" id="comment"
+                placeholder="L'itesse a eu zero en respect de procédure parce que ..."
+                [(ngModel)]="this.controle.comment">
+              </textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+          <button type="button" data-dismiss="modal" aria-label="Close" class="btn btn-primary"
+            [disabled]="!(this.controle.whoname.length > 0 && this.controle.doneby.length > 0 && this.controle.agence.length > 0)"
+            (click)="this.submitControle()">Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</main>

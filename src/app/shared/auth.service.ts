@@ -880,6 +880,12 @@ export class AuthService {
 
   }
 
+  getHttpCashITTrans(request: string) {
+
+    return fetch('https://us-central1-instan-transfer-management.cloudfunctions.net/getHttpCashITTrans?request='+request);
+
+  }
+
   getRecursiveCashITTrans(request: string, cashitdate1: string, cashitdate2: string) {
 
     const getRecursiveCashIT = firebase.functions().httpsCallable('getRecursiveCashITTrans');
@@ -916,9 +922,9 @@ export class AuthService {
 
   addTrans(data: any, key: string) {
     if (data.code) {
-      return this._firestore.collection('ittrans').doc(data.code + data[key]).set(data);
+      return this._firestore.collection('ittrans').doc(data.code + data[key]).set(data, {merge: true});
     } else {
-      return this._firestore.collection('ittrans').doc(data.type + data[key]).set(data);
+      return this._firestore.collection('ittrans').doc(data.type + data[key]).set(data, {merge: true});
     }
 
   }

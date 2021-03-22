@@ -8,6 +8,7 @@ import { rapprocherOM, omXLS } from '../rapprochements/orange money';
 import { rapprocherMOMO, momoXLS } from '../rapprochements/mtn_momo';
 import { rapprocherSMOBPAY, smobpayXLS } from '../rapprochements/smobil_pay';
 import { rapprocherDHL } from './dhl';
+import { rapprocherSW } from './small world';
 
 export function rapprocherGlobal(source: any[], types: Set<any>, workbook: Excel.Workbook, cashitdata: any[]) {
 
@@ -21,7 +22,9 @@ export function rapprocherGlobal(source: any[], types: Set<any>, workbook: Excel
         spy: {},
         ewu: {},
         rwu: {},
-        dhl: {}
+        dhl: {},
+        esw: {},
+        rsw: {}
     };
 
     if (types.has('FLASH TRANSFER')) {
@@ -34,7 +37,7 @@ export function rapprocherGlobal(source: any[], types: Set<any>, workbook: Excel
         console.log(tmft);
 
         const ftrapproch = rapprocherFT(tmft, ft, 'NO REF', 'RFNB', 'MONTANT', 'SDAMINSDCU',
-            'FRAIS ', 'SDFETTCINSDCU', 5, 25);
+            'FRAIS ', 'SDFETTCINSDCU', 10, 25);
 
         ftrapproch['source'] = tmft;
         ftrapproch['cashit'] = ft;
@@ -106,7 +109,7 @@ export function rapprocherGlobal(source: any[], types: Set<any>, workbook: Excel
         const tmrt = source.filter((e) => e['type'] === 'RAPID TRANSFER');
 
         const rtrapproch = rapprocherRT(tmrt, rt, 'RT Number', 'RFNB', 'Send Amount', 'SDAMINSDCU', 'Receiving Amount',
-            'Total Fee', 'SDFETTCINSDCU', 5, 25);
+            'Total Fee', 'SDFETTCINSDCU', 10, 25);
 
         rtrapproch['source'] = tmrt;
         rtrapproch['cashit'] = rt;
@@ -125,7 +128,7 @@ export function rapprocherGlobal(source: any[], types: Set<any>, workbook: Excel
 
         const riarapproch = rapprocherRIA(tmria, ria, 'PIN', 'RFNB', 'Sent Amount', 'SDAMINSDCU', 'Payment Amount',
             'CTE',
-            'Customer Fee', 'SDFETTCINSDCU', 5, 25);
+            'Customer Fee', 'SDFETTCINSDCU', 10, 25);
 
         riarapproch['source'] = tmria;
         riarapproch['cashit'] = ria;
@@ -176,7 +179,7 @@ export function rapprocherGlobal(source: any[], types: Set<any>, workbook: Excel
 
         const tmrwu = source.filter((e) => e['type'] === 'RETRAITS WESTERN UNION');
 
-        const rwurapproch = rapprocherWU(tmrwu, rwu, 'MTCN', 'RFNB', 'principal', 'SDAMINSDCU', 'charges', 'SDFETTCINSDCU', 5, 25);
+        const rwurapproch = rapprocherWU(tmrwu, rwu, 'MTCN', 'RFNB', 'principal', 'SDAMINSDCU', 'charges', 'SDFETTCINSDCU', 10, 25);
 
         rwurapproch['source'] = tmrwu;
         rwurapproch['cashit'] = rwu;
@@ -199,6 +202,40 @@ export function rapprocherGlobal(source: any[], types: Set<any>, workbook: Excel
         dhlrapproch['cashit'] = dhl;
 
         result.dhl = dhlrapproch;
+    }
+    if (types.has('ENVOIS SMALL WORLD')) {
+
+        const esw = cashitdata.filter((e) => ['SENT_SW', 'ANNULATED_SW', 'REMBOURS_SW'].indexOf(e['TFST']) > -1);
+
+        const tmesw = source.filter((e) => e['type'] === 'ENVOIS SMALL WORLD');
+
+        const eswrapproch = rapprocherSW(tmesw, esw, 'MTCN', 'RFNB', 'principal', 'SDAMINSDCU', 'charges', 'SDFETTCINSDCU', 10, 25);
+
+        eswrapproch['source'] = tmesw;
+        eswrapproch['cashit'] = esw;
+
+        result.esw = eswrapproch;
+
+        // workbook = wuXLS(ewurapproch, workbook,
+        //     ['Date', 'TYPE', 'MTCN', 'principal', 'charges'],
+        //     ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], tmewu, ewu);
+    }
+    if (types.has('RETRAITS SMALL WORLD')) {
+
+        const rsw = cashitdata.filter((e) => e['TFST'] === 'RECEIVED_SW');
+
+        const tmrsw = source.filter((e) => e['type'] === 'RETRAITS SMALL WORLD');
+
+        const rswrapproch = rapprocherSW(tmrsw, rsw, 'MTCN', 'RFNB', 'principal', 'SDAMINSDCU', 'charges', 'SDFETTCINSDCU', 10, 25);
+
+        rswrapproch['source'] = tmrsw;
+        rswrapproch['cashit'] = rsw;
+
+        result.rsw = rswrapproch;
+
+        // workbook = wuXLS(rwurapproch, workbook,
+        //     ['Date', 'TYPE', 'MTCN', 'principal', 'charges'],
+        //     ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], tmrwu, rwu);
     }
 
     return result;

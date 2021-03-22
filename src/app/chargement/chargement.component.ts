@@ -10,6 +10,7 @@ import { uploadOM, loadOMFiles } from './produits/orange_money';
 import { uploadRIA, loadRIAFiles } from './produits/ria';
 import { uploadRT, loadRTFiles } from './produits/rapid_transfer';
 import { uploadSMOBPAY, loadSMOBPAYFiles } from './produits/smobil_pay';
+import { loadSWFiles, uploadESW, uploadRSW } from './produits/small_world';
 import { uploadWU, loadWUFiles, uploadEWU, uploadRWU, loadEWUFiles, loadRWUFiles } from './produits/western_union';
 import { loadOtherFiles, uploadOther } from './produits/other';
 
@@ -30,6 +31,8 @@ import { Papa } from 'ngx-papaparse';
 import { ToastrService } from 'ngx-toastr';
 import { loadDHLFiles, uploadDHL } from './produits/dhl';
 import { dhlXLS, rapprocherDHL } from './rapprochements/dhl';
+import * as zipson from 'zipson';
+import { rapprocherSW, swXLS } from './rapprochements/small world';
 
 
 export let read = 0;
@@ -91,6 +94,9 @@ export class ChargementComponent implements OnInit {
   ewumerge = [];
   rwumerge = [];
 
+  eswmerge = [];
+  rswmerge = [];
+
   othermerge = [];
 
   progress = 0;
@@ -112,6 +118,8 @@ export class ChargementComponent implements OnInit {
     'smobilpay': 'TFST like \'ENEO\' OR TFST like \'CDE\' OR TFST like \'CANAL\' OR TFST like \'RECHARGE\'',
     'EWU': 'TFST like \'SENT_WU\' or TFST like \'ANNULATED_WU\' or TFST like \'REMBOURS_WU\'',
     'RWU': 'TFST like \'RECEIVED_WU\'',
+    'ESW': 'TFST like \'SENT_SW\' or TFST like \'ANNULATED_SW\' or TFST like \'REMBOURS_SW\'',
+    'RSW': 'TFST like \'RECEIVED_SW\'',
     'DHL': 'TFST like \'DHL\'',
   };
 
@@ -126,7 +134,9 @@ export class ChargementComponent implements OnInit {
     'WESTERN UNION': 'TFST like \'%_WU\'',
     'ENVOIS WESTERN UNION': 'TFST like \'SENT_WU\' or TFST like \'ANNULATED_WU\' or TFST like \'REMBOURS_WU\'',
     'RETRAITS WESTERN UNION': 'TFST like \'RECEIVED_WU\'',
-    'DHL': 'TFST like \'DHL\'',
+    'ENVOIS SMALL WORLD': 'TFST like \'SENT_SW\' or TFST like \'ANNULATED_SW\' or TFST like \'REMBOURS_SW\'',
+    'RETRAITS SMALL WORLD': 'TFST like \'RECEIVED_SW\'',
+    'DHL': 'TFST like \'DHL\''
   };
 
   setToDate(event) {
@@ -206,7 +216,9 @@ export class ChargementComponent implements OnInit {
             // console.log('--> ' + json[0]['SC Order Number,PIN,Delivery Method,Payer Teller Name,Payer Branch,Payer Branch Code,Country From,Country to,Payment Amount,Beneficiary Currency,Commission Amount,Commission Currency,SA Commission Amount,SA Commission Currency,Pay Date']);
 
             if (json.length > 0) {
-              if (json[0]['Account'] && json[0]['Legacy ID'] && json[0]['Base Amt'] === undefined) {
+              if (json[0]['Tran Date'] && json[0]['Reference ID']
+              //  && json[0]['Base Amt'] === undefined
+               ) {
 
                 console.log('C\'est un MoneyGram');
                 if (this.filetypes.indexOf('MoneyGram') === -1) {
@@ -321,7 +333,7 @@ export class ChargementComponent implements OnInit {
                   this.spymerge = [...this.spymerge, ...js];
                 }
 
-              } else if (json[4] && json[4]['Commission Par pays - Transferts Envoyés']) {
+              } else if (json[4] && (json[4]['Commission Par pays - Transferts Envoyés'] || json[4]['Commission By Country - Outbound'])) {
 
                 console.log('C\'est un EWU');
                 if (this.filetypes.indexOf('EWU') === -1) {
@@ -380,11 +392,10 @@ export class ChargementComponent implements OnInit {
               } else if (
                 ((json[0]['Date']
                   && json[0]['Currency'] && json[0]['Status']
-                  && json[0]['Currency_5'] && json[0]['To Handler Name'])
+                  &&  json[0]['To Handler Name'])
                   ||
                   (json[0]['Date']
-                    && json[0]['Devise'] && json[0]['Devise_1']
-                    && json[0]['Devise_5'] && json[0]['From Handler Name']))
+                    && json[0]['Devise'] && json[0]['Statut'] &&  json[0]['From Handler Name']))
                 &&
                 json[0]['Type'] !== 'Mise en Service'
                 &&
@@ -435,6 +446,47 @@ export class ChargementComponent implements OnInit {
                     this.workbook, file.name);
                 } else {
                   this.dhlmerge = [...this.dhlmerge, ...js];
+                }
+              } else if (json[0]['Transactions de l\'opérateur du payeur'] && json[0]['__EMPTY']) {
+                console.log('C\'est un RSW');
+                if (this.filetypes.indexOf('RSW') === -1) {
+                  this.filetypes.push('RSW');
+                }
+
+                const js: any = await uploadRSW(file, this.auth.currentUser.uid,
+                  this.auth.user.firstname + ' ' + this.auth.user.lastname, file.name)
+
+                console.log(js);
+
+                if (this.merge === false) {
+                  console.log('on est dans false');
+                  console.log('--> ', js.length);
+                  this.workbook = loadSWFiles(
+                    js,
+                    this.workbook, file.name);
+                } else {
+                  console.log('on est dans true');
+                  this.rswmerge = [...this.rswmerge, ...js];
+                }
+              } else if (json[0]['Opérateur'] && json[0]['__EMPTY']) {
+                console.log('C\'est un ESW');
+                if (this.filetypes.indexOf('ESW') === -1) {
+                  this.filetypes.push('ESW');
+                }
+                const js: any = await uploadESW(file, this.auth.currentUser.uid,
+                  this.auth.user.firstname + ' ' + this.auth.user.lastname, file.name)
+
+                console.log(js);
+
+                if (this.merge === false) {
+                  console.log('on est dans false');
+                  console.log('--> ', js.length);
+                  this.workbook = loadSWFiles(
+                    js,
+                    this.workbook, file.name);
+                } else {
+                  console.log('on est dans true');
+                  this.eswmerge = [...this.eswmerge, ...js];
                 }
               } else {
 
@@ -553,6 +605,11 @@ export class ChargementComponent implements OnInit {
                 source,
                 this.workbook, this.product);
             }
+            if (this.product === 'RETRAITS SMALL WORLD') {
+              this.workbook = loadSWFiles(
+                source,
+                this.workbook, this.product);
+            }
 
             this.workbook.xlsx.writeBuffer().then(printdata => {
               const blob = new Blob([printdata], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
@@ -607,60 +664,71 @@ export class ChargementComponent implements OnInit {
 
         try {
           console.log(request);
-          const cashit: Promise<any> = (await this.auth.getCashITTrans(request)).data;
+          // const cashit: Promise<any> = (await this.auth.getCashITTrans(request)).data;
 
-          const cashitdata = await cashit;
+          const cashit: Promise<any> = (await (await this.auth.getHttpCashITTrans(request)).json())['result'];
+
+          let cashitdata = await cashit;
+
+          cashitdata = zipson.parse(cashitdata);
 
           console.log(cashitdata);
 
           if (this.ftmerge.length > 0) {
+
             const ft = cashitdata.filter((e) => ['SENT_FT', 'RECEIVED_FT'].indexOf(e['TFST']) > -1);
             const ftrapproch = rapprocherFT(this.ftmerge, ft, 'NO REF', 'RFNB', 'MONTANT', 'SDAMINSDCU',
               'FRAIS ', 'SDFETTCINSDCU', 5, 25);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(ftrapproch);
             this.workbook = ftXLS(ftrapproch, this.workbook,
-              ['DATE', 'TYPE', 'NO REF', 'MONTANT', 'FRAIS '],
-              ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.ftmerge, ft);
+              ['Date', 'TYPE', 'NO REF', 'MONTANT', 'FRAIS ', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.ftmerge, ft);
           }
           if (this.mgmerge.length > 0) {
-            const mg = cashitdata.filter((e) => ['SENT_MG', 'RECEIVED_MG'].indexOf(e['TFST']) > -1);
+
+            const mg = cashitdata
+              .filter((e) => ['SENT_MG', 'RECEIVED_MG'].indexOf(e['TFST']) > -1);
             const mgrapproch = rapprocherMG(this.mgmerge, mg, 'Reference ID', 'RFNB', 'Base Amt', 'SDAMINSDCU', 'Fee Amt', 'SDFETTCINSDCU', 5, 25);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(mgrapproch);
             this.workbook = mgXLS(mgrapproch, this.workbook,
-              ['Tran Date', 'Tran Type', 'Reference ID', 'Base Amt', 'Fee Amt'],
-              ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.mgmerge, cashitdata);
+              ['Date', 'Tran Type', 'Reference ID', 'Base Amt', 'Fee Amt', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.mgmerge, cashitdata);
           }
           if (this.mtnmerge.length > 0) {
+
             const mtn = cashitdata.filter((e) => ['RECH_MOMO', 'RECEIVE_MOMO'].indexOf(e['TFST']) > -1);
             const mtnrapproch = rapprocherMOMO(this.mtnmerge, mtn);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(mtnrapproch);
             this.workbook = momoXLS(mtnrapproch, this.workbook,
-              ['Date', 'TYPE', 'De', 'Ã ', 'Montant'],
-              ['RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], this.mtnmerge, cashitdata);
+              ['Date', 'TYPE', 'De', 'Ã ', 'Montant', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], this.mtnmerge, cashitdata);
           }
           if (this.ommerge.length > 0) {
+
             const om = cashitdata.filter((e) => ['RECH_OGMO', 'RECEIVE_OGMO'].indexOf(e['TFST']) > -1);
             const omrapproch = rapprocherOM(this.ommerge, om);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(omrapproch);
             this.workbook = omXLS(omrapproch, this.workbook,
-              ['Date', 'Service', 'Compte1', 'Compte2', 'Credit', 'Debit'],
-              ['RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], this.ommerge, cashitdata);
+              ['Date', 'Service', 'Compte1', 'Compte2', 'Credit', 'Debit', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], this.ommerge, cashitdata);
           }
           if (this.rtmerge.length > 0) {
+
             const rt = cashitdata.filter((e) => ['SENT_RT', 'RECEIVED_RT'].indexOf(e['TFST']) > -1);
             const rtrapproch = rapprocherRT(this.rtmerge, rt, 'RT Number', 'RFNB', 'Send Amount', 'SDAMINSDCU', 'Receiving Amount',
               'Total Fee', 'SDFETTCINSDCU', 5, 25);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(rtrapproch);
             this.workbook = rtXLS(rtrapproch, this.workbook,
-              ['Payment Date', 'Transaction Status', 'RT Number', 'Send Amount', 'Receiving Amount', 'Total Fee'],
-              ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.rtmerge, rt);
+              ['Date', 'Transaction Status', 'RT Number', 'Send Amount', 'Receiving Amount', 'Total Fee', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.rtmerge, rt);
           }
           if (this.riamerge.length > 0) {
+
             const ria = cashitdata.filter((e) => ['SENT_RIA', 'RECEIVED_RIA'].indexOf(e['TFST']) > -1);
             const riarapproch = rapprocherRIA(this.riamerge, ria, 'PIN', 'RFNB', 'Sent Amount', 'SDAMINSDCU', 'Payment Amount',
               'CTE',
@@ -668,57 +736,86 @@ export class ChargementComponent implements OnInit {
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(riarapproch);
             this.workbook = riaXLS(riarapproch, this.workbook,
-              ['Date', 'Action', 'PIN', 'Sent Amount', 'Payment Amount', 'Customer Fee', 'CTE', 'TVA1'],
-              ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.riamerge, ria);
+              ['Date', 'Action', 'PIN', 'Sent Amount', 'Payment Amount', 'Customer Fee', 'CTE', 'TVA1', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.riamerge, ria);
           }
           if (this.spymerge.length > 0) {
+
             const spy = cashitdata.filter((e) => ['CDE', 'CANAL', 'ENEO', 'RECHARGE'].indexOf(e['TFST']) > -1);
             const spyrapproch = rapprocherSMOBPAY(this.spymerge, spy);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(spyrapproch);
             this.workbook = smobpayXLS(spyrapproch, this.workbook,
-              ['Paid At', 'Service', 'Branch', 'Amount'],
-              ['numtransaction', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], this.spymerge, cashitdata);
+              ['Date', 'Service', 'Branch', 'Amount', 'HTComm'],
+              ['INIDA', 'numtransaction', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], this.spymerge, cashitdata);
           }
           if (this.wumerge.length > 0) {
+
             const wu = cashitdata.filter((e) => ['SENT_WU', 'RECEIVED_WU'].indexOf(e['TFST']) > -1);
             console.log(wu);
             const wurapproch = rapprocherWU(this.wumerge, wu, 'MTCN', 'RFNB', 'principal', 'SDAMINSDCU', 'charges', 'SDFETTCINSDCU', 10, 25);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(wurapproch);
             this.workbook = wuXLS(wurapproch, this.workbook,
-              ['Date', 'TYPE', 'MTCN', 'principal', 'charges'],
-              ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.wumerge, wu);
+              ['Date', 'TYPE', 'MTCN', 'principal', 'charges', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.wumerge, wu);
           }
           if (this.ewumerge.length > 0) {
+
             const ewu = cashitdata.filter((e) => ['SENT_WU', 'ANNULATED_WU', 'REMBOURS_WU'].indexOf(e['TFST']) > -1);
             console.log(ewu);
             const ewurapproch = rapprocherWU(this.ewumerge, ewu, 'MTCN', 'RFNB', 'principal', 'SDAMINSDCU', 'charges', 'SDFETTCINSDCU', 10, 25);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(ewurapproch);
             this.workbook = wuXLS(ewurapproch, this.workbook,
-              ['Date', 'TYPE', 'MTCN', 'principal', 'charges'],
-              ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.ewumerge, ewu);
+              ['Date', 'TYPE', 'MTCN', 'principal', 'charges', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.ewumerge, ewu);
           }
           if (this.rwumerge.length > 0) {
+
             // this.workbook = loadRWUFiles(this.rwumerge, this.workbook, 'Retrait Western Union');
             const rwu = cashitdata.filter((e) => e['TFST'] === 'RECEIVED_WU');
             const rwurapproch = rapprocherWU(this.rwumerge, rwu, 'MTCN', 'RFNB', 'principal', 'SDAMINSDCU', 'charges', 'SDFETTCINSDCU', 5, 25);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(rwurapproch);
             this.workbook = wuXLS(rwurapproch, this.workbook,
-              ['Date', 'TYPE', 'MTCN', 'principal', 'charges'],
-              ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.rwumerge, rwu);
+              ['Date', 'TYPE', 'MTCN', 'principal', 'charges', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.rwumerge, rwu);
           }
           if (this.dhlmerge.length > 0) {
+
             // this.workbook = loadRWUFiles(this.rwumerge, this.workbook, 'Retrait Western Union');
             const dhl = cashitdata.filter((e) => e['TFST'] === 'DHL');
             const dhlrapproch = rapprocherDHL(this.dhlmerge, dhl, 'identifiant', 'RFNB', 'charges', 'SDFETTCINSDCU', 25);
             // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
             console.log(dhlrapproch);
             this.workbook = dhlXLS(dhlrapproch, this.workbook,
-              ['Date', 'identifiant', 'sender', 'receiver', 'paysdesti', 'teldesti', 'charges'],
-              ['RFNB', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.dhlmerge, dhl);
+              ['Date', 'identifiant', 'sender', 'receiver', 'paysdesti', 'teldesti', 'charges', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.dhlmerge, dhl);
+          }
+          if (this.eswmerge.length > 0) {
+
+            console.log('at least here');
+
+            const esw = cashitdata
+              .filter((e) => ['SENT_SW'].indexOf(e['TFST']) > -1);
+            const eswrapproch = rapprocherSW(this.eswmerge, esw, 'MTN', 'RFNB', 'Montant principal d\'Envoi', 'SDAMINSDCU', 'Fee', 'SDFETTCINSDCU', 5, 25);
+            // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
+            console.log(eswrapproch);
+            this.workbook = swXLS(eswrapproch, this.workbook,
+              ['Date', 'code', 'MTN', 'Montant principal d\'Envoi', 'Fee', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.eswmerge, cashitdata);
+          }
+          if (this.rswmerge.length > 0) {
+
+            const rsw = cashitdata
+              .filter((e) => ['RECEIVED_SW'].indexOf(e['TFST']) > -1);
+            const rswrapproch = rapprocherSW(this.rswmerge, rsw, 'MTN', 'RFNB', 'Montant de paiement', 'SDAMINSDCU', 'Fee', 'SDFETTCINSDCU', 5, 25);
+            // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
+            console.log(rswrapproch);
+            this.workbook = swXLS(rswrapproch, this.workbook,
+              ['Date', 'code', 'MTN', 'Montant de paiement', 'Opérateur', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], this.rswmerge, cashitdata);
           }
 
           this.workbook.xlsx.writeBuffer().then(printdata => {
@@ -750,7 +847,10 @@ export class ChargementComponent implements OnInit {
       console.log('------> ', this.product);
       this.auth.getItTrans(this.cashitdate1, this.cashitdate2, this.product)
         .subscribe(async (snapshot) => {
-          const source = snapshot.docs.map((el) => el.data());
+          const source = snapshot.docs.map((el) => el.data()).map((s) => {
+            s['Date'] = s['Date'].toDate();
+            return s;
+          });
 
           console.log(source);
 
@@ -772,9 +872,12 @@ export class ChargementComponent implements OnInit {
 
             try {
               console.log(request);
-              const cashit: Promise<any> = (await this.auth.getCashITTrans(request)).data;
+              // const cashit: Promise<any> = (await this.auth.getCashITTrans(request)).data;
+              const cashit: Promise<any> = (await (await this.auth.getHttpCashITTrans(request)).json())['result'];
 
-              const cashitdata = await cashit;
+              let cashitdata = await cashit;
+
+              cashitdata = zipson.parse(cashitdata);
 
               console.log(cashitdata);
 
@@ -785,8 +888,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(ftrapproch);
                 this.workbook = ftXLS(ftrapproch, this.workbook,
-                  ['DATE', 'TYPE', 'NO REF', 'MONTANT', 'FRAIS '],
-                  ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, ft);
+                  ['Date', 'TYPE', 'NO REF', 'MONTANT', 'FRAIS ', 'HTComm'],
+                  ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, ft);
               }
               if (this.product === 'MONEYGRAM') {
                 const mg = cashitdata.filter((e) => ['SENT_MG', 'RECEIVED_MG'].indexOf(e['TFST']) > -1);
@@ -794,8 +897,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(mgrapproch);
                 this.workbook = mgXLS(mgrapproch, this.workbook,
-                  ['Tran Date', 'Tran Type', 'Reference ID', 'Base Amt', 'Fee Amt'],
-                  ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, cashitdata);
+                  ['Date', 'Tran Type', 'Reference ID', 'Base Amt', 'Fee Amt', 'HTComm'],
+                  ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, cashitdata);
               }
               if (this.product === 'MTN MOBILE MONEY') {
                 const mtn = cashitdata.filter((e) => ['RECH_MOMO', 'RECEIVE_MOMO'].indexOf(e['TFST']) > -1);
@@ -803,8 +906,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(mtnrapproch);
                 this.workbook = momoXLS(mtnrapproch, this.workbook,
-                  ['Date', 'TYPE', 'De', 'Ã ', 'Montant'],
-                  ['RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], source, cashitdata);
+                  ['Date', 'TYPE', 'De', 'Ã ', 'Montant', 'HTComm'],
+                  ['INIDA', 'RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], source, cashitdata);
               }
               if (this.product === 'ORANGE MONEY') {
                 const om = cashitdata.filter((e) => ['RECH_OGMO', 'RECEIVE_OGMO'].indexOf(e['TFST']) > -1);
@@ -812,8 +915,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(omrapproch);
                 this.workbook = omXLS(omrapproch, this.workbook,
-                  ['Date', 'Service', 'Compte1', 'Compte2', 'Credit', 'Debit'],
-                  ['RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], source, cashitdata);
+                  ['Date', 'Service', 'Compte1', 'Compte2', 'Credit', 'Debit', 'HTComm'],
+                  ['INIDA', 'RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], source, cashitdata);
               }
               if (this.product === 'RAPID TRANSFER') {
                 const rt = cashitdata.filter((e) => ['SENT_RT', 'RECEIVED_RT'].indexOf(e['TFST']) > -1);
@@ -822,8 +925,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(rtrapproch);
                 this.workbook = rtXLS(rtrapproch, this.workbook,
-                  ['Payment Date', 'Transaction Status', 'RT Number', 'Send Amount', 'Receiving Amount', 'Total Fee'],
-                  ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, rt);
+                  ['Date', 'Transaction Status', 'RT Number', 'Send Amount', 'Receiving Amount', 'Total Fee', 'HTComm'],
+                  ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, rt);
               }
               if (this.product === 'RIA') {
                 const ria = cashitdata.filter((e) => ['SENT_RIA', 'RECEIVED_RIA'].indexOf(e['TFST']) > -1);
@@ -833,8 +936,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(riarapproch);
                 this.workbook = riaXLS(riarapproch, this.workbook,
-                  ['Date', 'Action', 'PIN', 'Sent Amount', 'Payment Amount', 'Customer Fee', 'CTE', 'TVA1'],
-                  ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, ria);
+                  ['Date', 'Action', 'PIN', 'Sent Amount', 'Payment Amount', 'Customer Fee', 'CTE', 'TVA1', 'HTComm'],
+                  ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, ria);
               }
               if (this.product === 'SMOBILPAY') {
                 const spy = cashitdata.filter((e) => ['CDE', 'CANAL', 'ENEO', 'RECHARGE'].indexOf(e['TFST']) > -1);
@@ -842,8 +945,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(spyrapproch);
                 this.workbook = smobpayXLS(spyrapproch, this.workbook,
-                  ['Paid At', 'Service', 'Branch', 'Amount'],
-                  ['numtransaction', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], source, cashitdata);
+                  ['Date', 'Service', 'Branch', 'Amount', 'HTComm'],
+                  ['INIDA', 'numtransaction', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'], source, cashitdata);
               }
               if (this.product === 'ENVOIS WESTERN UNION') {
                 const ewu = cashitdata.filter((e) => e['TFST'] === 'SENT_WU');
@@ -852,8 +955,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(ewurapproch);
                 this.workbook = wuXLS(ewurapproch, this.workbook,
-                  ['Date', 'TYPE', 'MTCN', 'principal', 'charges'],
-                  ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, ewu);
+                  ['Date', 'TYPE', 'MTCN', 'principal', 'charges', 'HTComm'],
+                  ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, ewu);
               }
               if (this.product === 'RETRAITS WESTERN UNION') {
                 // this.workbook = loadRWUFiles(this.rwumerge, this.workbook, 'Retrait Western Union');
@@ -862,8 +965,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(rwurapproch);
                 this.workbook = wuXLS(rwurapproch, this.workbook,
-                  ['Date', 'TYPE', 'MTCN', 'principal', 'charges'],
-                  ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, rwu);
+                  ['Date', 'TYPE', 'MTCN', 'principal', 'charges', 'HTComm'],
+                  ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, rwu);
               }
               if (this.product === 'DHL') {
                 // this.workbook = loadRWUFiles(this.rwumerge, this.workbook, 'Retrait Western Union');
@@ -872,8 +975,8 @@ export class ChargementComponent implements OnInit {
                 // this.workbook = loadMGFiles(this.mgmerge, this.workbook, 'Moneygram');
                 console.log(dhlrapproch);
                 this.workbook = dhlXLS(dhlrapproch, this.workbook,
-                  ['Date', 'identifiant', 'sender', 'receiver', 'paysdesti', 'teldesti', 'charges'],
-                  ['RFNB', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, dhl);
+                  ['Date', 'identifiant', 'sender', 'receiver', 'paysdesti', 'teldesti', 'charges', 'HTComm'],
+                  ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'], source, dhl);
               }
 
               this.workbook.xlsx.writeBuffer().then(printdata => {
@@ -948,6 +1051,12 @@ export class ChargementComponent implements OnInit {
         if (this.dhlmerge.length > 0) {
           this.workbook = loadDHLFiles(this.dhlmerge, this.workbook, 'DHL');
         }
+        if (this.rswmerge.length > 0) {
+          this.workbook = loadSWFiles(this.rswmerge, this.workbook, 'Retrait Small World');
+        }
+        if (this.eswmerge.length > 0) {
+          this.workbook = loadSWFiles(this.eswmerge, this.workbook, 'Envoi Small World');
+        }
         if (this.othermerge.length > 0) {
           this.workbook = loadOtherFiles(this.othermerge, this.workbook, 'Other')
         }
@@ -987,7 +1096,8 @@ export class ChargementComponent implements OnInit {
       // + this.wumerge.length;
       + this.ewumerge.length
       + this.rwumerge.length
-      + this.dhlmerge.length;
+      + this.dhlmerge.length
+      + this.rswmerge.length;
     this.progress = 0;
 
     if (this.wumerge.length === 0) {
@@ -1131,6 +1241,34 @@ export class ChargementComponent implements OnInit {
             promises.push(p);
           });
         }
+        if (this.rswmerge.length > 0) {
+          this.rswmerge.forEach(trans => {
+            const max = 3;
+            let p: Promise<void> = Promise.reject();
+
+            for (let i = 0; i < max; i++) {
+              p = p.catch((e) => {
+                return this.auth.addTrans(trans, 'MTN');
+              });
+            }
+            p = p.then(() => { this.progress = this.progress + 1; }).catch(() => { console.log(trans['MTN'], ' est têtu'); });
+            promises.push(p);
+          });
+        }
+        if (this.eswmerge.length > 0) {
+          this.eswmerge.forEach(trans => {
+            const max = 3;
+            let p: Promise<void> = Promise.reject();
+
+            for (let i = 0; i < max; i++) {
+              p = p.catch((e) => {
+                return this.auth.addTrans(trans, 'MTN');
+              });
+            }
+            p = p.then(() => { this.progress = this.progress + 1; }).catch(() => { console.log(trans['MTN'], ' est têtu'); });
+            promises.push(p);
+          });
+        }
 
         await Promise.all(promises);
 
@@ -1236,7 +1374,7 @@ export class ChargementComponent implements OnInit {
       this.auth.fadeOut = true;
       this.reset();
     }
-    
+
   }
 
   reset() {
@@ -1251,6 +1389,8 @@ export class ChargementComponent implements OnInit {
     this.ewumerge = [];
     this.rwumerge = [];
     this.dhlmerge = [];
+    this.rswmerge = [];
+    this.eswmerge = [];
     this.othermerge = [];
 
     this.filetypes = [];
@@ -1309,11 +1449,18 @@ export class ChargementComponent implements OnInit {
 
           try {
             console.log(request);
-            const cashit: Promise<any> = (await this.auth.getCashITTrans(request)).data;
+            // const cashit: Promise<any> = (await this.auth.getCashITTrans(request)).data;
 
-            const cashitdata = await cashit;
+            // const cashitdata = await cashit;
+
+            const cashit: Promise<any> = (await (await this.auth.getHttpCashITTrans(request)).json())['result'];
+
+            let cashitdata = await cashit;
+
+            cashitdata = zipson.parse(cashitdata);
 
             console.log(cashitdata);
+            
 
             const result = rapprocherGlobal(source, types, this.workbook, cashitdata);
 

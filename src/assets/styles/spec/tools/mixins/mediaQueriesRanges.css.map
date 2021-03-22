@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "",
+    "sources": [
+        "mediaQueriesRanges.scss"
+    ],
+    "names": [],
+    "file": "mediaQueriesRanges.css"
+}

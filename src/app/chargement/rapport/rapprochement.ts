@@ -20,6 +20,8 @@ export function printRapprochement(relevant: {
     ewu: {};
     rwu: {};
     dhl: {};
+    esw: {};
+    rsw: {};
 }) {
     let workbook: Excel.Workbook = getSynthese(relevant);
     workbook = getOtherSheets(relevant, workbook);
@@ -196,78 +198,94 @@ function getOtherSheets(relevant: {
     ewu: {};
     rwu: {};
     dhl: {};
+    esw: {};
+    rsw: {};
 }, wbk) {
     let workbook = wbk;
 
     if (relevant.ft['source'] !== undefined) {
 
         workbook = ftXLS(relevant.ft, workbook,
-            ['DATE', 'TYPE', 'NO REF', 'MONTANT', 'FRAIS '],
-            ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
+            ['Date', 'TYPE', 'NO REF', 'MONTANT', 'FRAIS ', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
             relevant.ft['source'], relevant.ft['cashit']);
     }
     if (relevant.mg['source'] !== undefined) {
 
         workbook = mgXLS(relevant.mg, workbook,
-            ['Tran Date', 'Tran Type', 'Reference ID', 'Base Amt', 'Fee Amt'],
-            ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
+            ['Date', 'Tran Type', 'Reference ID', 'Base Amt', 'Fee Amt', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
             relevant.mg['source'], relevant.mg['cashit']);
     }
     if (relevant.mtn['source'] !== undefined) {
 
         workbook = momoXLS(relevant.mtn, workbook,
-            ['Date', 'TYPE', 'De', 'Ã ', 'Montant'],
-            ['RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'],
+            ['Date', 'TYPE', 'De', 'Ã ', 'Montant', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'],
             relevant.mtn['source'], relevant.mtn['cashit']);
     }
     if (relevant.om['source'] !== undefined) {
 
         workbook = omXLS(relevant.om, workbook,
-            ['Date', 'Service', 'Compte1', 'Compte2', 'Credit', 'Debit'],
-            ['RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'],
+            ['Date', 'Service', 'Compte1', 'Compte2', 'Credit', 'Debit', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'simphoneFils', 'tel', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'],
             relevant.om['source'], relevant.om['cashit']);
     }
     if (relevant.rt['source'] !== undefined) {
 
         workbook = rtXLS(relevant.rt, workbook,
-            ['Payment Date', 'Transaction Status', 'RT Number', 'Send Amount', 'Receiving Amount', 'Total Fee'],
-            ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
+            ['Date', 'Transaction Status', 'RT Number', 'Send Amount', 'Receiving Amount', 'Total Fee', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
             relevant.rt['source'], relevant.rt['cashit']);
     }
     if (relevant.ria['source'] !== undefined) {
 
         workbook = riaXLS(relevant.ria, workbook,
-            ['Date', 'Action', 'PIN', 'Sent Amount', 'Payment Amount', 'Customer Fee', 'CTE', 'TVA1'],
-            ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
+            ['Date', 'Action', 'PIN', 'Sent Amount', 'Payment Amount', 'Customer Fee', 'CTE', 'TVA1', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
             relevant.ria['source'], relevant.ria['cashit']);
     }
     if (relevant.spy['source'] !== undefined) {
 
         workbook = smobpayXLS(relevant.spy, workbook,
-            ['Paid At', 'Service', 'Branch', 'Amount'],
-            ['numtransaction', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'],
+            ['Date', 'Service', 'Branch', 'Amount', 'HTComm'],
+              ['INIDA', 'numtransaction', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'comment'],
             relevant.spy['source'], relevant.spy['cashit']);
     }
     if (relevant.ewu['source'] !== undefined) {
 
         workbook = wuXLS(relevant.ewu, workbook,
-            ['Date', 'TYPE', 'MTCN', 'principal', 'charges'],
-            ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
+            ['Date', 'TYPE', 'MTCN', 'principal', 'charges', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
             relevant.ewu['source'], relevant.ewu['cashit']);
     }
     if (relevant.rwu['source'] !== undefined) {
 
         workbook = wuXLS(relevant.rwu, workbook,
-            ['Date', 'TYPE', 'MTCN', 'principal', 'charges'],
-            ['RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
+            ['Date', 'TYPE', 'MTCN', 'principal', 'charges', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
             relevant.rwu['source'], relevant.rwu['cashit']);
     }
     if (relevant.dhl['source'] !== undefined) {
 
         workbook = dhlXLS(relevant.dhl, workbook,
-            ['Date', 'identifiant', 'sender', 'receiver', 'paysdesti', 'teldesti', 'charges'],
-            ['RFNB', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
+            ['Date', 'identifiant', 'sender', 'receiver', 'paysdesti', 'teldesti', 'charges', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
             relevant.dhl['source'], relevant.dhl['cashit']);
+    }
+    if (relevant.esw['source'] !== undefined) {
+
+        workbook = dhlXLS(relevant.esw, workbook,
+            ['Date', 'code', 'MTN', 'Montant principal d\'Envoi', 'Fee', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
+            relevant.esw['source'], relevant.esw['cashit']);
+    }
+    if (relevant.rsw['source'] !== undefined) {
+
+        workbook = dhlXLS(relevant.rsw, workbook,
+            ['Date', 'code', 'MTN', 'Montant de paiement', 'Opérateur', 'HTComm'],
+              ['INIDA', 'RFNB', 'TFST', 'SDAMINSDCU', 'SDFETTCINSDCU', 'SDIAGN', 'SDIUSFN', 'difference', 'comment'],
+            relevant.rsw['source'], relevant.rsw['cashit']);
     }
 
     return workbook;

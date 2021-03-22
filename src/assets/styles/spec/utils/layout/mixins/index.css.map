@@ -1,0 +1,11 @@
+{
+    "version": 3,
+    "mappings": "",
+    "sources": [
+        "index.scss",
+        "mediaQueryCondition.scss",
+        "generateResponsive.scss"
+    ],
+    "names": [],
+    "file": "index.css"
+}

@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAIA,AAAA,SAAS,AAAA,OAAO,CAAG;EAAE,OAAO,EAAE,eAAe;CAAI;;AACjD,AAAA,UAAU,AAAA,QAAQ,CAAC;EAAE,OAAO,EAAE,eAAe;CAAI",
+    "sources": [
+        "pseudo.scss"
+    ],
+    "names": [],
+    "file": "pseudo.css"
+}

@@ -1,0 +1,14 @@
+{
+    "version": 3,
+    "mappings": "",
+    "sources": [
+        "index.scss",
+        "breakpoints.scss",
+        "fonts.scss",
+        "materialColors.scss",
+        "baseColors.scss",
+        "borders.scss"
+    ],
+    "names": [],
+    "file": "index.css"
+}

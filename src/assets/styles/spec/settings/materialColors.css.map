@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "",
+    "sources": [
+        "materialColors.scss"
+    ],
+    "names": [],
+    "file": "materialColors.css"
+}

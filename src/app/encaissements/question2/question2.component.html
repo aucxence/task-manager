@@ -1,0 +1,11 @@
+<form class="jumbotron">
+  <div class="form-group row">
+    <label for="niveauAgence" class="col-12">Quel est le niveau de toutes les caisses en agence?</label>
+    <input class="col-12 form-control" 
+        type="text" name="niveauAgence" id="niveauAgence" 
+        [(ngModel)]="this.niveauAgence" (keyup)="toString()">
+  </div>
+
+  <hr>
+  <button class="btn btn-warning btn-block" [disabled]="this.niveauAgence.length === 0" (click)="evaluer()">Suivant</button>
+</form>

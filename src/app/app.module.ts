@@ -64,6 +64,15 @@ import { AngularEditorModule } from '@kolkov/angular-editor';
 import { EmailSendboxComponent } from './email/email-sendbox/email-sendbox.component';
 import { DeroDEComponent } from './email/dero-de/dero-de.component';
 import { DisciplineComponent } from './tasks-dashboard/discipline/discipline.component';
+import { EncaissementsComponent } from './encaissements/encaissements/encaissements.component';
+import { IntroductionComponent } from './encaissements/introduction/introduction.component';
+import { QuestionComponent } from './encaissements/question/question.component';
+import { ResultsComponent } from './encaissements/results/results.component';
+import { Question1Component } from './encaissements/question1/question1.component';
+import { Question2Component } from './encaissements/question2/question2.component';
+import { Question3Component } from './encaissements/question3/question3.component';
+import { Question4Component } from './encaissements/question4/question4.component';
+import { Question5Component } from './encaissements/question5/question5.component';
 
 // the second parameter 'fr' is optional
 registerLocaleData(localeFr, 'fr');
@@ -102,7 +111,16 @@ firebase.initializeApp(environment.firebaseConfig);
     EmailComponent,
     EmailSendboxComponent,
     DeroDEComponent,
-    DisciplineComponent
+    DisciplineComponent,
+    EncaissementsComponent,
+    IntroductionComponent,
+    QuestionComponent,
+    ResultsComponent,
+    Question1Component,
+    Question2Component,
+    Question3Component,
+    Question4Component,
+    Question5Component
   ],
   imports: [
     BrowserModule,

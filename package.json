@@ -63,6 +63,7 @@
     "uuid": "^8.2.0",
     "web-animations-js": "^2.3.2",
     "xlsx": "^0.16.7",
+    "zipson": "^0.2.12",
     "zone.js": "~0.10.2"
   },
   "devDependencies": {

@@ -1,0 +1,13 @@
+{
+    "version": 3,
+    "mappings": "",
+    "sources": [
+        "index.scss",
+        "mixins/index.scss",
+        "mixins/placeholder.scss",
+        "mixins/clearfix.scss",
+        "mixins/mediaQueriesRanges.scss"
+    ],
+    "names": [],
+    "file": "index.css"
+}

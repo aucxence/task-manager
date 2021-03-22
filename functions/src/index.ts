@@ -5,6 +5,7 @@ const nodemailer = require('nodemailer');
 const mysql = require('mysql');
 
 const cors = require('cors')({ origin: true });
+const zipson = require('zipson');
 
 
 // The Firebase Admin SDK to access Cloud Firestore.
@@ -477,7 +478,7 @@ exports.getRecursiveCashITTrans = functions.region('us-central1').https.onCall((
         req = req.replace('1?1', `'${debut.toISOString()}'`);
         req = req.replace('2?2', `'${end.toISOString()}'`);
 
-        
+
 
         proms.push(dealprogress(req).then((x) => {
             console.log('~~~~~~> ', 'Succès', ' <~~~~~~');
@@ -505,6 +506,8 @@ exports.getRecursiveCashITTrans = functions.region('us-central1').https.onCall((
 
 // Saves a message to the Firebase Realtime Database but sanitizes the text by removing swearwords.
 exports.getCashITTrans = functions.region('us-central1').https.onCall((data: any, context: any) => {
+
+
     const promise: Promise<any> = new Promise((resolve, reject) => {
         const con = mysql.createConnection({
             host: '51.38.124.57',
@@ -532,6 +535,58 @@ exports.getCashITTrans = functions.region('us-central1').https.onCall((data: any
     });
 
     return promise;
+
+});
+
+exports.getHttpCashITTrans = functions.region('us-central1').https.onRequest((req: any, response: any) => {
+
+    cors(req, response, () => {
+
+        console.log(req.query.request);
+
+        const request: String = req.query.request.split('%20').join(' ');
+
+        console.log(request);
+
+        const promise: Promise<any> = new Promise((resolve, reject) => {
+            const con = mysql.createConnection({
+                host: '51.38.124.57',
+                user: 'aucxence',
+                password: '@aucXence2o2oIT!',
+                database: 'cashitproduction',
+                dateStrings: true,
+                port: 3306
+            });
+            con.connect((err: any) => {
+                if (err) {
+                    console.log(err);
+                    reject(err);
+                }
+                console.log('connexion réussie');
+                con.query(request, (error: any, hebdo: any, fields: any) => {
+                    if (error) {
+                        console.log(error);
+                        reject(error);
+                    }
+                    con.end();
+                    console.log(hebdo[0]);
+                    resolve(hebdo);
+                });
+            });
+        });
+
+        promise.then((hebdo: any) => {
+            console.log(zipson.stringify(hebdo));
+            response.json({
+                result: zipson.stringify(hebdo)
+            });
+            // console.log('niveau 2');
+            // response.end();
+        }).catch((e) => {
+            console.log(e);
+            response.send(e);
+        })
+    });
 
 });
 

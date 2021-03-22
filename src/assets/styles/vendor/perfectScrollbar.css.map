@@ -1,0 +1,9 @@
+{
+    "version": 3,
+    "mappings": "AAAA,AAAA,WAAW,CAAC;EACV,KAAK,EAAE,YAAY;EACnB,IAAI,EAAE,eAAe;CACtB",
+    "sources": [
+        "perfectScrollbar.scss"
+    ],
+    "names": [],
+    "file": "perfectScrollbar.css"
+}

@@ -1,0 +1,11 @@
+<form class="jumbotron">
+  <div class="form-group row">
+    <label class="col-4" for="encaissAmount">Quel montant désirez-vous encaisser?</label>
+    <input class="col-12 form-control" 
+      type="text" name="encaisAmount" id="encaisAmount" 
+      [(ngModel)]="encaissAmount" 
+      (keyup)="toString()">
+  </div>
+  <hr>
+  <button class="btn btn-primary btn-block" [disabled]="this.encaissAmount.length === 0" (click)="evaluer()">Suivant</button>
+</form>

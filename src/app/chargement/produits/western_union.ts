@@ -240,7 +240,13 @@ export function uploadEWU(file: any, id: string, fullname: string, filename: str
         el['filename'] = filename;
 
         const dt = el['Date'].split('/');
-        const dte = new Date(dt[2], dt[1] - 1, dt[0]);
+        let year = dt[2];
+        let dte = new Date(year, dt[1] - 1, dt[0]);
+        if (dt[2].length === 2) {
+          year = '20' + dt[2];
+          dte = new Date(year, dt[0] - 1, dt[1]);
+        }
+        
         dte.setHours(11, 0, 0, 0);
 
         el['Date'] = dte;

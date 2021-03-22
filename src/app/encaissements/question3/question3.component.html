@@ -1,0 +1,10 @@
+<form class="jumbotron">
+  <div class="form-group row">
+      <label class="col-12" for="plafondAgence">Quel est le plafond de l'agence?</label>
+      <input class="col-12 form-control" type="text" name="plafondAgence" id="plafondAgence"
+        [(ngModel)]="this.plafondAgence" (keyup)="toString()">
+  </div>
+  <hr>
+  <button class="btn btn-danger btn-block" [disabled]="this.plafondAgence.length === 0"
+    (click)="evaluer()">Suivant</button>
+</form>

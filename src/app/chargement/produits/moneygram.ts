@@ -48,11 +48,27 @@ export function uploadMG(file, id: string, fullname: string, mgfees: any, filena
 
             todo.forEach((element: any) => {
 
+                
+
+                let nb = element['Base Amt'].length;
+                element['Base Amt'] = (+element['Base Amt']) ? +element['Base Amt'] : parseFloat(element['Base Amt'].substring(1, nb - 1));
+
+                nb = element['Fee Amt'].length;
+                element['Fee Amt'] = (+element['Fee Amt']) ? +element['Fee Amt'] : parseFloat(element['Fee Amt'].substring(1, nb - 1));
+
+                nb = element['Comm Amt'].length;
+                element['Comm Amt'] = (+element['Comm Amt']) ? +element['Comm Amt'] : parseFloat(element['Comm Amt'].substring(1, nb - 1));
+
+                element['Fx Rev Share Amt'] = element['Fx Rev Share Amt'].trim();
+                // console.log('-'+element['Fx Rev Share Amt']+'-');
+                element['Fx Rev Share Amt'] = (+element['Fx Rev Share Amt']) ? +element['Fx Rev Share Amt'] : parseFloat(element['Fx Rev Share Amt'].substring(1, nb - 1));
+
                 let afbcomm = Math.abs((element['Comm Amt'] * 0.65));
                 let transfercomm = 0;
 
                 if (element['Tran Type'] === 'SEN') {
                     const iso2 = (countries.findByCCA3(element['Rcv Cntry']).data)[0].cca2;
+
                     if (international.indexOf(iso2) > -1) {
                         transfercomm = getComm(element['Base Amt'], mgfees['international']);
                     } else if (usacanada.indexOf(iso2) > -1) {
@@ -69,6 +85,7 @@ export function uploadMG(file, id: string, fullname: string, mgfees: any, filena
                         // console.log('---> ' + element['Reference ID'] + ' == ' + iso2);
                         throw new Error('Problème de zone');
                     }
+
                     element['code'] = 'EMG';
                 } else if (element['Tran Type'] === 'REC') {
                     element['code'] = 'RMG';
@@ -90,6 +107,7 @@ export function uploadMG(file, id: string, fullname: string, mgfees: any, filena
                         // console.log('---> ' + element['Reference ID'] + ' == ' + iso2);
                         throw new Error('Problème de zone');
                     }
+
                     afbcomm = -1 * afbcomm;
                     element['code'] = 'AMG';
                     element['Base Amt'] = -1 * element['Base Amt'];
@@ -118,12 +136,6 @@ export function uploadMG(file, id: string, fullname: string, mgfees: any, filena
 
                 els['Date'] = new Date(els['Tran Date']);
 
-                els['Base Amt'] = +els['Base Amt'];
-                els['Fee Amt'] = +els['Fee Amt'];
-                els['Comm Amt'] = +els['Comm Amt'];
-
-                els['Fx Rev Share Amt'] = +els['Fx Rev Share Amt'];
-
                 // console.log(els);
 
                 result.push(els);
@@ -137,7 +149,7 @@ export function uploadMG(file, id: string, fullname: string, mgfees: any, filena
 
             result = result.map((el) => {
                 if (el['Tran Type'] === 'SEN' && ids.indexOf(el['Reference ID']) !== -1) {
-                    el['Tran Type'] = 'ASEN';
+                    el['Tran Type'] = 'SEN';
                     el['code'] = 'AEMG';
                 }
                 return el;

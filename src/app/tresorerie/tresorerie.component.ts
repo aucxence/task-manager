@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr';
 import { momoXLS, rapprocherMOMO, uploadCxMOMO } from './rapprochements/mtn_money';
 import { uploadMOMO } from '../chargement/produits/mtn_money';
 import { Papa } from 'ngx-papaparse';
+import { compensMG, loadCompensFiles, uploadMG } from '../chargement/compensation/moneygram';
 
 @Component({
   selector: 'app-tresorerie',
@@ -29,15 +30,21 @@ export class TresorerieComponent implements OnInit {
   @ViewChild('secondSelectorm')
   secondSelectorm: ElementRef;
 
+  @ViewChild('thirdSelector')
+  thirdSelector: ElementRef;
+
   progressive = false;
   filetypes = [];
 
   first = [];
   second = [];
+  third = [];
 
   momofees: any = {};
 
   workbook: Excel.Workbook;
+
+  mgfees: { [key: number]: number } = {};
 
   constructor(public auth: AuthService, private papa: Papa, private _toastr: ToastrService) { }
 
@@ -46,6 +53,9 @@ export class TresorerieComponent implements OnInit {
     this.auth.fadeOut = true;
     this.auth.getMoMoCommissions().subscribe((snapshot) => {
       snapshot.docs.forEach((element) => this.momofees[element.id] = element.data());
+    });
+    this.auth.getMgCommissions().subscribe((snapshot) => {
+      snapshot.docs.forEach((element) => this.mgfees[element.id] = element.data());
     });
   }
 
@@ -83,10 +93,11 @@ export class TresorerieComponent implements OnInit {
 
           console.log(json);
 
-          if (json.length > 0) {
-            if (json[0]['Account'] && json[0]['Legacy ID'] && json[0]['Base Amt'] === undefined) {
+          console.log(json[1]['Tran Date']);
+          console.log(json[1]['Reference ID']);
 
-            } else if (json[1] && json[1]['Rapport d\'Activité par Site']) {
+          if (json.length > 0) {
+            if (json[1] && json[1]['Rapport d\'Activité par Site']) {
               console.log('C\'est un WU');
               if (this.filetypes.indexOf('Western Union Activité') === -1) {
                 this.filetypes.push('Western Union Activité');
@@ -143,10 +154,10 @@ export class TresorerieComponent implements OnInit {
               && json[0]['Type'] !== 'Commissioning')
               ||
               (json[0]
-              &&  json[0]['Date']
-              && json[0]['Devise']
-              && json[0]['Statut']
-              && json[0]['Type'] !== 'Mise en Service')) {
+                && json[0]['Date']
+                && json[0]['Devise']
+                && json[0]['Statut']
+                && json[0]['Type'] !== 'Mise en Service')) {
 
               console.log('C\'est un MOMO');
               if (this.filetypes.indexOf('MTN MoMo') === -1) {
@@ -178,8 +189,21 @@ export class TresorerieComponent implements OnInit {
               console.log(js);
 
               this.second = [...this.second, ...js];
-              
+
               console.log('--> ', this.second.length);
+            } else if ((json[1]['Tran Date'] && json[1]['Reference ID']) || (json[0]['Tran Date'] && json[0]['Reference ID'])) {
+              console.log('C\'est un MoneyGram');
+              if (this.filetypes.indexOf('MoneyGram') === -1) {
+                this.filetypes.push('MoneyGram');
+              }
+              const js: any = await uploadMG(file, this.auth.currentUser.uid,
+                this.auth.user.firstname + ' ' + this.auth.user.lastname,
+                this.mgfees, file.name);
+              this.third = [...this.third, ...js];
+
+              console.log('--> down');
+
+              console.log(this.third);
             } else {
               console.log('fichier non reconnu');
             }
@@ -200,6 +224,36 @@ export class TresorerieComponent implements OnInit {
 
 
 
+  }
+
+  compensationMG() {
+    this.auth.fadeOut = false;
+
+    this.workbook = new Excel.Workbook();
+
+    try {
+      const result = compensMG(this.third);
+      console.log(result);
+
+      this.workbook = loadCompensFiles(result, this.third, this.workbook);
+
+      this.workbook.xlsx.writeBuffer().then(printdata => {
+        const blob = new Blob([printdata], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8' });
+        FileSaver.saveAs(blob, 'Compensation MoneyGram tiré le ' + new Date().toISOString() + '.xlsx');
+        this._toastr.success('Compensation réussie', 'Succès', {
+          timeOut: 4000
+        });
+        this.resetMGFiles();
+        this.auth.fadeOut = true;
+      });
+    } catch (e) {
+      this._toastr.error(e, 'Error', {
+        timeOut: 4000
+      });
+      console.log(e);
+      this.resetMGFiles();
+      this.auth.fadeOut = true;
+    }
   }
 
   rapprochWU() {
@@ -309,6 +363,11 @@ export class TresorerieComponent implements OnInit {
   resetWUFile2() {
     this.secondSelector.nativeElement.value = '';
     this.second = [];
+  }
+
+  resetMGFiles() {
+    this.thirdSelector.nativeElement.value = '';
+    this.third = [];
   }
 
 }

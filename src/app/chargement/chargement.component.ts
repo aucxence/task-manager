@@ -33,6 +33,7 @@ import { loadDHLFiles, uploadDHL } from './produits/dhl';
 import { dhlXLS, rapprocherDHL } from './rapprochements/dhl';
 import * as zipson from 'zipson';
 import { rapprocherSW, swXLS } from './rapprochements/small world';
+import { uploadFT2 } from './produits/flash_transfer_2';
 
 
 export let read = 0;
@@ -213,6 +214,8 @@ export class ChargementComponent implements OnInit {
 
             console.log('-->')
 
+            console.log(json[0]);
+
             // console.log('--> ' + json[0]['SC Order Number,PIN,Delivery Method,Payer Teller Name,Payer Branch,Payer Branch Code,Country From,Country to,Payment Amount,Beneficiary Currency,Commission Amount,Commission Currency,SA Commission Amount,SA Commission Currency,Pay Date']);
 
             if (json.length > 0) {
@@ -256,15 +259,32 @@ export class ChargementComponent implements OnInit {
                     console.log('=====================================');
                   }
                 }
-              } else if (json[0]['DATE'] && json[0]['DESTINATION'] && json[0]['DEVISE ']
+              } else if ((json[0]['DATE'] && json[0]['DESTINATION'] && json[0]['DEVISE ']
                 && json[0]['FRAIS '] && json[0]['HEURE'] && json[0]['MONTANT']
-                && json[0]['N0 ENVOI'] && json[0]['NO REF'] && json[0]['TYPE']) {
+                && json[0]['N0 ENVOI'] && json[0]['NO REF'] && json[0]['TYPE'])
+                ||
+                (json[0]['JOURNAL  DES ENVOIS'])
+                ||
+                (json[0]['JOURNAL DES ENVOIS'])
+                ||
+                (json[0]['JOURNAL  DES RECEPTIONS'])
+                ||
+                (json[0]['JOURNAL DES RECEPTIONS'])) {
 
                 console.log('C\'est un Flash Transfer');
                 if (this.filetypes.indexOf('Flash Transfer') === -1) {
                   this.filetypes.push('Flash Transfer');
                 }
-                const js: any = await uploadFT(file, this.auth.currentUser.uid,
+                const js: any = ((json[0]['JOURNAL  DES ENVOIS'])
+                ||
+                (json[0]['JOURNAL DES ENVOIS'])
+                ||
+                (json[0]['JOURNAL  DES RECEPTIONS'])
+                ||
+                (json[0]['JOURNAL DES RECEPTIONS']))
+                ? await uploadFT2(file, this.auth.currentUser.uid,
+                  this.auth.user.firstname + ' ' + this.auth.user.lastname, file.name)
+                : await uploadFT(file, this.auth.currentUser.uid,
                   this.auth.user.firstname + ' ' + this.auth.user.lastname, file.name);
                 console.log(js);
 

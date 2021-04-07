@@ -1,5 +1,50 @@
 <div class="p-4 m-4">
   <div id="accordion">
+
+    <div class="card">
+      <div class="card-header" id="headingThree">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree"
+            aria-expanded="false" aria-controls="collapseThree">
+            Compensation MoneyGram
+          </button>
+        </h5>
+      </div>
+      <div id="collapseThree" class="collapse show" aria-labelledby="headingThree" data-parent="#accordion">
+        <div class="card-body">
+          <div class="col-6 offset-3">
+            <div class="shadow-sm p-3 mb-5 bg-white rounded">
+              <div class="form-group">
+                <label for="file11">Fichier d'origine MoneyGram</label>
+                <input #thirdSelector type="file" class="form-control-file" id="file13"
+                  (change)="this.incomingfile($event)"
+                  accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,.csv"
+                  multiple>
+                <span style="text-align: right;">
+                  <button type="button" class="close btn btn-info" (click)="resetMGFiles()"
+                    [disabled]="this.third.length === 0">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="shadow-sm p-3 bg-white rounded">
+          <div class="d-flex justify-content-around">
+            <button class="btn btn-info col-4" (click)="this.compensationMG()"
+              [disabled]="this.third.length === 0">
+              Faire la compensation
+            </button>
+            <button class="btn btn-danger col-4" (click)="this.resetMGFiles()"
+              [disabled]="this.third.length === 0">
+              Réinitialiser
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-header" id="headingOne">
         <h5 class="mb-0">
@@ -10,7 +55,7 @@
         </h5>
       </div>
 
-      <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordion">
+      <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-parent="#accordion">
         <div class="card-body">
           <div class="container p-4 align-middle">
             <div class="row">
@@ -128,26 +173,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-header" id="headingThree">
-        <h5 class="mb-0">
-          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapseThree"
-            aria-expanded="false" aria-controls="collapseThree">
-            Autres rapprochements
-          </button>
-        </h5>
-      </div>
-      <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
-        <div class="card-body">
-          Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon
-          officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf
-          moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim
-          keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur
-          butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably
-          haven't heard of them accusamus labore sustainable VHS.
         </div>
       </div>
     </div>

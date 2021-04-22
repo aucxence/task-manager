@@ -324,7 +324,8 @@ export const international = [
     'LA',
     'LC',
     'LB',
-    'LI'
+    'LI',
+    'RS'
 ];
 
 export const usacanada = [

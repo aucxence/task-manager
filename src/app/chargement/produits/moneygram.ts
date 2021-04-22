@@ -83,6 +83,9 @@ export function uploadMG(file, id: string, fullname: string, mgfees: any, filena
                         transfercomm = getComm(element['Base Amt'], mgfees['benin']);
                     } else {
                         // console.log('---> ' + element['Reference ID'] + ' == ' + iso2);
+                        console.log('------------------------');
+                        console.log(element['Reference ID']);
+                        console.log('------------------------');
                         throw new Error('Problème de zone');
                     }
 
